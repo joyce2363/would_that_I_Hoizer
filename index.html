@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Would That I — Garfield Train Dance & 2D Forest Visualizer</title>
+  <title>Would That I — Articulated Dancing Garfield & 2D Forest Visualizer</title>
   <style>
     :root {
       --bg-dark: #0e0a08;
@@ -384,19 +384,19 @@
 
   <div id="drop-overlay">
     <h2>Drop "Would That I" Audio File Here</h2>
-    <p>Garfield will dance to the dissected Guitar, Vocals, Kick/Bass &amp; Percussion!</p>
+    <p>Garfield's arms, legs, knees &amp; hips dance to the dissected instruments!</p>
   </div>
 
   <div id="start-banner">
     <div class="title-group">
-      <h1>Garfield Train Dance &amp; "Would That I" Visualizer</h1>
-      <span>Drag Garfield anywhere • Switch dance styles • Strum the guitar strings or drop an MP3!</span>
+      <h1>Articulated Limb-Dancing Garfield &amp; "Would That I"</h1>
+      <span>2-Bone IK Knees, Elbows, Hands &amp; Feet • Drag Garfield anywhere • Press M for Dance Moves!</span>
     </div>
     <button id="start-experience-btn" class="primary">▶ Start Music &amp; Dance</button>
   </div>
 
   <div id="human-hint">
-    🐱 <b>Drag Garfield</b> anywhere on the train • 🕺 Press <b>M</b> to cycle Dance Moves (<span id="dance-move-label" style="color:#ffd59e;font-weight:bold;">Groove &amp; Wave</span>) • 🎸 Strum strings or press <b>A S D F G H</b> / <b>Space</b>
+    🐱 <b>Drag Garfield</b> anywhere on the train • 🕺 Press <b>M</b> to switch Human Dance Moves (<span id="dance-move-label" style="color:#ffd59e;font-weight:bold;">Hip-Hop Step &amp; Groove</span>) • 🎸 Strum strings or press <b>A S D F G H</b> / <b>Space</b>
   </div>
 
   <button id="zen-btn" title="Toggle Controls (Shortcut: Z)">Hide UI (Z)</button>
@@ -405,7 +405,7 @@
     <div class="dock-top">
       <div class="btn-row">
         <button id="garfield-toggle-btn" class="ember-toggle active-toggle">🐱 Garfield: ON</button>
-        <button id="dance-style-btn" class="ember-toggle active-toggle">🕺 Move: Groove &amp; Wave</button>
+        <button id="dance-style-btn" class="ember-toggle active-toggle">🕺 Move: Hip-Hop Groove</button>
         <button id="scene-switch-btn" class="ember-toggle active-toggle">🚋 Scene: Sunset Train</button>
         <button id="demo-music-btn" class="ember-toggle">🎸 Acoustic Beat: OFF</button>
         <button id="rain-audio-btn">🌧️ Rain: OFF</button>
@@ -432,7 +432,7 @@
       <div class="stem-card">
         <div class="stem-header">
           <strong>🎸 Acoustic Guitar</strong>
-          <span id="stem-guitar-val">Body Groove</span>
+          <span id="stem-guitar-val">Arm &amp; Hand Swing</span>
         </div>
         <div class="stem-bar-bg">
           <div class="stem-bar-fill" id="stem-guitar-bar" style="background: linear-gradient(90deg, #e8b954, #fff0a8);"></div>
@@ -442,7 +442,7 @@
       <div class="stem-card">
         <div class="stem-header">
           <strong>🎤 Vocals &amp; Choir</strong>
-          <span id="stem-vocal-val">Sunbeam Glow</span>
+          <span id="stem-vocal-val">Sunlight Glow</span>
         </div>
         <div class="stem-bar-bg">
           <div class="stem-bar-fill" id="stem-vocal-bar" style="background: linear-gradient(90deg, #a2d98c, #e2ffc4);"></div>
@@ -452,7 +452,7 @@
       <div class="stem-card">
         <div class="stem-header">
           <strong>🥁 Kick Stomp &amp; Bass</strong>
-          <span id="stem-bass-val">Garfield Bounce</span>
+          <span id="stem-bass-val">Knee Squat &amp; Kick</span>
         </div>
         <div class="stem-bar-bg">
           <div class="stem-bar-fill" id="stem-bass-bar" style="background: linear-gradient(90deg, #ff7038, #ffbe6b);"></div>
@@ -462,7 +462,7 @@
       <div class="stem-card">
         <div class="stem-header">
           <strong>👏 Claps &amp; Shakers</strong>
-          <span id="stem-perc-val">Foot Tap / Rain</span>
+          <span id="stem-perc-val">Footwork &amp; Tail</span>
         </div>
         <div class="stem-bar-bg">
           <div class="stem-bar-fill" id="stem-perc-bar" style="background: linear-gradient(90deg, #7ec8ff, #d4f0ff);"></div>
@@ -474,9 +474,9 @@
       <div class="control-group">
         <div class="control-header">
           <span>Dance Energy &amp; Speed</span>
-          <span class="val" id="dance-energy-val">80%</span>
+          <span class="val" id="dance-energy-val">85%</span>
         </div>
-        <input type="range" id="dance-energy" min="10" max="150" value="80" />
+        <input type="range" id="dance-energy" min="15" max="150" value="85" />
       </div>
 
       <div class="control-group">
@@ -484,15 +484,15 @@
           <span>Garfield Size</span>
           <span class="val" id="garf-size-val">100%</span>
         </div>
-        <input type="range" id="garf-size" min="40" max="180" value="100" />
+        <input type="range" id="garf-size" min="45" max="175" value="100" />
       </div>
 
       <div class="control-group">
         <div class="control-header">
           <span>Rain Intensity</span>
-          <span class="val" id="rain-density-val">35%</span>
+          <span class="val" id="rain-density-val">30%</span>
         </div>
-        <input type="range" id="rain-density" class="rain-range" min="0" max="100" value="35" />
+        <input type="range" id="rain-density" class="rain-range" min="0" max="100" value="30" />
       </div>
 
       <div class="control-group">
@@ -537,10 +537,10 @@
     let twilightLoaded = false;
     twilightImage.onload = () => { twilightLoaded = true; };
 
-    const garfieldImage = new Image();
-    garfieldImage.src = 'garfield.png';
-    let garfieldLoaded = false;
-    garfieldImage.onload = () => { garfieldLoaded = true; };
+    const garfieldHeadImg = new Image();
+    garfieldHeadImg.src = 'garfield_head.png';
+    let garfieldHeadLoaded = false;
+    garfieldHeadImg.onload = () => { garfieldHeadLoaded = true; };
 
     const SCENES = [
       { id: 'train', label: '🚋 Scene: Sunset Train' },
@@ -549,27 +549,27 @@
     ];
 
     const DANCE_MOVES = [
-      { id: 'groove', name: 'Groove & Wave' },
-      { id: 'breakdance', name: 'Breakdance Spin' },
-      { id: 'aisle_strut', name: 'Aisle Moonwalk' },
-      { id: 'bench_lounge', name: 'Velvet Seat Bop' },
-      { id: 'rave', name: 'Lasagna Disco Rave' }
+      { id: 'hiphop', name: 'Hip-Hop Step & Groove' },
+      { id: 'disco', name: 'Disco Fever Point' },
+      { id: 'moonwalk', name: 'Aisle Moonwalk Strut' },
+      { id: 'air_guitar', name: 'Air Guitar Jam' },
+      { id: 'rave', name: 'Hands-Up Rave Jump' }
     ];
 
     const state = {
-      sceneIdx: 0,             // Starts on Sunset Train!
+      sceneIdx: 0,
       showGarfield: true,
       danceMoveIdx: 0,
-      danceEnergy: 0.80,
+      danceEnergy: 0.85,
       garfieldScale: 1.0,
-      garfX: 0.48,             // Normalized X position (center of train aisle)
-      garfY: 0.83,             // Normalized Y floor position
+      garfX: 0.49,
+      garfY: 0.90,
       draggingGarfield: false,
       dragOffsetX: 0,
       dragOffsetY: 0,
       windowFogEnabled: false,
       fogMaxOpacity: 0.60,
-      rainDensity: 0.35,
+      rainDensity: 0.30,
       emberIntensity: 0.75,
       windAngleDeg: -9,
       ambienceVolume: 0.55,
@@ -580,7 +580,6 @@
       targetMouseY: 0,
       lastMousePxX: null,
       lastMousePxY: null,
-      // Dissected Instrument Envelopes
       stemBass: 0,
       stemGuitar: 0,
       stemVocal: 0,
@@ -593,7 +592,6 @@
       activeChordIdx: 0
     };
 
-    // Musical notes floating off Garfield as he dances
     const musicNotes = [];
     const noteSymbols = ['♪', '♫', '♬', '✨'];
 
@@ -733,7 +731,7 @@
       osc3.stop(now + 2.65);
 
       if (spawnVisuals && state.showGarfield) {
-        spawnMusicNote(width * state.garfX, height * state.garfY - 70);
+        spawnMusicNote(width * state.garfX, height * state.garfY - 190);
       }
     }
 
@@ -743,7 +741,6 @@
       }
     }
 
-    // Play a warm kick stomp for the groove demo so Garfield bounces hard to the beat!
     function triggerKickStomp() {
       if (!audioCtx) return;
       const now = audioCtx.currentTime;
@@ -769,7 +766,6 @@
     let masterAmbienceGain = null;
     let rainPinkGain = null;
     let rainPatterGain = null;
-    let fireCrackleGain = null;
     let analyser = null;
     let freqData = null;
     let songSourceNode = null;
@@ -905,7 +901,6 @@
           if (step % 16 === 0) {
             state.activeChordIdx = (state.activeChordIdx + 1) % CHORDS.length;
           }
-          // Kick stomp on every 2nd beat so Garfield bounces!
           if (step % 2 === 0) {
             triggerKickStomp();
           }
@@ -949,7 +944,7 @@
         guitarStrings[targetStr].vibration = Math.max(guitarStrings[targetStr].vibration, pluckTransient * 35);
         guitarStrings[targetStr].glow = Math.min(1, guitarStrings[targetStr].glow + 0.5);
         if (Math.random() < 0.35 && state.showGarfield) {
-          spawnMusicNote(width * state.garfX, height * state.garfY - 80);
+          spawnMusicNote(width * state.garfX, height * state.garfY - 200);
         }
       }
 
@@ -1015,141 +1010,325 @@
     initParticles();
 
     // ============================================================================
-    // 6. DANCING GARFIELD RENDERER (SLICE-WARP ARTICULATION + BOUNCE + MOVES)
+    // 6. FULL 2-BONE IK RIGGED HUMAN-DANCING GARFIELD ENGINE
     // ============================================================================
-    let danceTime = 0;
+    let dancePhase = 0;
 
-    function drawDancingGarfield(artRect) {
-      if (!state.showGarfield || !garfieldLoaded) return;
+    // Draws a tapered cartoon limb capsule between p1 and p2 with radii r1 and r2
+    function drawCapsule(p1, p2, r1, r2, color) {
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const dist = Math.hypot(dx, dy);
+      ctx.fillStyle = color;
+      if (dist < 0.5) {
+        ctx.beginPath();
+        ctx.arc(p1.x, p1.y, r1, 0, Math.PI * 2);
+        ctx.fill();
+        return;
+      }
+      const nx = -dy / dist;
+      const ny = dx / dist;
+
+      ctx.beginPath();
+      ctx.moveTo(p1.x + nx * r1, p1.y + ny * r1);
+      ctx.lineTo(p2.x + nx * r2, p2.y + ny * r2);
+      ctx.lineTo(p2.x - nx * r2, p2.y - ny * r2);
+      ctx.lineTo(p1.x - nx * r1, p1.y - ny * r1);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(p1.x, p1.y, r1, 0, Math.PI * 2);
+      ctx.arc(p2.x, p2.y, r2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 2-Bone Inverse Kinematics solver (Hip -> Knee -> Foot)
+    function solveIK2Bone(hip, foot, L1, L2, bendDir) {
+      const dx = foot.x - hip.x;
+      const dy = foot.y - hip.y;
+      const d = Math.max(8, Math.min(L1 + L2 - 1, Math.hypot(dx, dy)));
+      const cosA = Math.max(-1, Math.min(1, (L1 * L1 + d * d - L2 * L2) / (2 * L1 * d)));
+      const angleA = Math.acos(cosA);
+      const baseAngle = Math.atan2(dy, dx);
+      const kneeAngle = baseAngle + bendDir * angleA;
+      return {
+        x: hip.x + Math.cos(kneeAngle) * L1,
+        y: hip.y + Math.sin(kneeAngle) * L1
+      };
+    }
+
+    function drawRiggedGarfield() {
+      if (!state.showGarfield) return;
 
       const move = DANCE_MOVES[state.danceMoveIdx].id;
-      const audioBoost = 1 + state.stemBass * 1.9 + state.stemGuitar * 1.1;
-      danceTime += 0.065 * state.danceEnergy * audioBoost;
+      const audioBoost = 1 + state.stemBass * 1.8 + state.stemGuitar * 1.1;
+      dancePhase += 0.055 * state.danceEnergy * audioBoost;
 
-      const baseW = Math.min(width, height) * 0.38 * state.garfieldScale;
-      const baseH = baseW * (garfieldImage.height / garfieldImage.width);
+      const ORANGE = '#f4911e';
+      const BLACK = '#0c0a0a';
+      const s = (Math.min(width, height) / 900) * state.garfieldScale;
+      const OUTLINE = 3.8 * s;
 
-      // Compute position & dance transformations based on selected move
-      let cx = width * state.garfX;
+      let baseCx = width * state.garfX;
       let floorY = height * state.garfY;
-      let bounceY = 0;
-      let swayX = 0;
-      let squashX = 1.0;
-      let stretchY = 1.0;
-      let rotation = 0;
-      let flipX = 1;
-      let perspectiveScale = 1.0;
+      let pScale = s;
 
-      const beatSin = Math.sin(danceTime * 2);
-      const beatCos = Math.cos(danceTime * 2);
-      const fastSin = Math.sin(danceTime * 4);
-
-      if (move === 'groove') {
-        bounceY = -Math.pow(beatSin, 2) * (42 * state.danceEnergy + state.stemBass * 65);
-        swayX = Math.sin(danceTime) * (46 * state.danceEnergy);
-        stretchY = 1.0 + 0.15 * fastSin * state.danceEnergy + state.stemBass * 0.18;
-        squashX = 1.0 - 0.11 * fastSin * state.danceEnergy - state.stemBass * 0.12;
-        rotation = beatSin * 0.16 * state.danceEnergy;
-        flipX = Math.sin(danceTime * 0.5) < 0 ? -1 : 1;
-      } else if (move === 'breakdance') {
-        // Spins like a helicopter on the sunlit train floor + pops up on the beat!
-        bounceY = -Math.abs(beatSin) * (28 + state.stemBass * 75);
-        rotation = danceTime * 2.6;
-        squashX = 1.0 + 0.12 * beatCos;
-        stretchY = 1.0 - 0.10 * beatCos;
-      } else if (move === 'aisle_strut') {
-        // Moonwalks up and down the sunlit patches of the train car aisle in 3D perspective!
-        const walkCycle = (Math.sin(danceTime * 0.45) + 1) * 0.5; // 0 (far down aisle) to 1 (foreground)
-        if (!state.draggingGarfield) {
-          cx = width * 0.49 + Math.sin(danceTime * 1.8) * 28;
-          floorY = height * (0.64 + walkCycle * 0.27);
-        }
-        perspectiveScale = 0.48 + walkCycle * 0.68;
-        bounceY = -Math.pow(beatSin, 2) * 32 * perspectiveScale;
-        stretchY = 1.0 + 0.13 * fastSin;
-        squashX = 1.0 - 0.09 * fastSin;
-        rotation = beatSin * 0.12;
-        flipX = Math.cos(danceTime * 0.45) < 0 ? -1 : 1;
-      } else if (move === 'bench_lounge') {
-        // Lounges right on the sunlit red velvet train bench on the left!
-        if (!state.draggingGarfield) {
-          cx = width * 0.255;
-          floorY = height * 0.675;
-        }
-        perspectiveScale = 0.82;
-        bounceY = -Math.pow(beatSin, 2) * (18 + state.stemBass * 35);
-        stretchY = 1.0 + 0.10 * fastSin;
-        squashX = 1.0 - 0.08 * fastSin;
-        rotation = -0.06 + beatSin * 0.08;
-      } else if (move === 'rave') {
-        bounceY = -Math.pow(beatSin, 2) * (68 * state.danceEnergy + state.stemBass * 90);
-        swayX = Math.sin(danceTime * 1.5) * 65;
-        stretchY = 1.0 + 0.22 * fastSin;
-        squashX = 1.0 - 0.16 * fastSin;
-        rotation = Math.sin(danceTime * 2) * 0.28;
-        flipX = Math.sin(danceTime) < 0 ? -1 : 1;
+      // Moonwalk mode glides up and down the sunlit train aisle in perspective!
+      if (move === 'moonwalk' && !state.draggingGarfield) {
+        const walkProgress = (Math.sin(dancePhase * 0.35) + 1) * 0.5;
+        baseCx = width * 0.49 + Math.sin(dancePhase * 1.4) * 20;
+        floorY = height * (0.68 + walkProgress * 0.25);
+        pScale = s * (0.58 + walkProgress * 0.52);
       }
 
-      const drawW = baseW * squashX * perspectiveScale;
-      const drawH = baseH * stretchY * perspectiveScale;
+      const beat2 = Math.sin(dancePhase * 2);
+      const bounce = Math.abs(beat2);
+      const stepSide = Math.sin(dancePhase); // -1 left, +1 right
 
-      // 1. Draw Floor Contact Shadow on the Sunlit Train Floor / Bench
+      // Compute Pelvis, Torso, Foot & Arm targets per human dance style
+      let hipSwayX = stepSide * (24 + state.stemGuitar * 18) * pScale;
+      let pelvisDropY = (1.0 - bounce) * (16 + state.stemBass * 28) * pScale;
+      let torsoTilt = -stepSide * 9 * pScale;
+
+      let lLift = Math.pow(Math.max(0, Math.sin(dancePhase)), 1.3) * (34 + state.stemBass * 28) * pScale;
+      let rLift = Math.pow(Math.max(0, -Math.sin(dancePhase)), 1.3) * (34 + state.stemBass * 28) * pScale;
+      let lKickX = Math.max(0, Math.sin(dancePhase)) * (-22 * pScale);
+      let rKickX = Math.max(0, -Math.sin(dancePhase)) * (22 * pScale);
+
+      let lUpperAng, lForeAng, rUpperAng, rForeAng;
+
+      if (move === 'hiphop') {
+        // Wide swinging arms & elbows
+        lUpperAng = (175 - 48 * Math.sin(dancePhase) + 18 * Math.cos(dancePhase * 2)) * Math.PI / 180;
+        lForeAng  = lUpperAng + (-55 + 48 * Math.cos(dancePhase)) * Math.PI / 180;
+        rUpperAng = (5 - 48 * Math.sin(dancePhase) - 18 * Math.cos(dancePhase * 2)) * Math.PI / 180;
+        rForeAng  = rUpperAng + (55 + 48 * Math.cos(dancePhase)) * Math.PI / 180;
+      } else if (move === 'disco') {
+        // Left hand planted on left hip; Right arm points high up to sky then down across body!
+        const pointCycle = Math.sin(dancePhase);
+        lUpperAng = 142 * Math.PI / 180;
+        lForeAng  = 45 * Math.PI / 180;
+        rUpperAng = (-45 * pointCycle - 10) * Math.PI / 180;
+        rForeAng  = (-55 * pointCycle - 15) * Math.PI / 180;
+      } else if (move === 'moonwalk') {
+        // Smooth heel-toe moonwalk leg cycle + pumping arms
+        lLift = Math.max(0, Math.sin(dancePhase * 2)) * 26 * pScale;
+        rLift = Math.max(0, -Math.sin(dancePhase * 2)) * 26 * pScale;
+        lKickX = Math.cos(dancePhase * 2) * 28 * pScale;
+        rKickX = -Math.cos(dancePhase * 2) * 28 * pScale;
+        lUpperAng = (120 + 45 * Math.sin(dancePhase * 2)) * Math.PI / 180;
+        lForeAng  = lUpperAng - 65 * Math.PI / 180;
+        rUpperAng = (60 - 45 * Math.sin(dancePhase * 2)) * Math.PI / 180;
+        rForeAng  = rUpperAng + 65 * Math.PI / 180;
+      } else if (move === 'air_guitar') {
+        // Left hand holds high fret neck; Right hand strums rapidly across belly!
+        lUpperAng = 155 * Math.PI / 180;
+        lForeAng  = (195 + Math.sin(dancePhase * 2) * 12) * Math.PI / 180;
+        rUpperAng = 42 * Math.PI / 180;
+        rForeAng  = (135 + Math.sin(dancePhase * 6) * (28 + state.stemGuitar * 30)) * Math.PI / 180;
+      } else {
+        // Rave mode: both arms pumping high overhead + big jumps!
+        const jump = Math.max(0, Math.sin(dancePhase * 2)) * (32 + state.stemBass * 45) * pScale;
+        pelvisDropY = -jump;
+        lLift += jump;
+        rLift += jump;
+        lUpperAng = (-125 + Math.sin(dancePhase * 2) * 25) * Math.PI / 180;
+        lForeAng  = (-105 + Math.cos(dancePhase * 4) * 30) * Math.PI / 180;
+        rUpperAng = (-55 - Math.sin(dancePhase * 2) * 25) * Math.PI / 180;
+        rForeAng  = (-75 - Math.cos(dancePhase * 4) * 30) * Math.PI / 180;
+      }
+
+      const cx = baseCx + hipSwayX;
+      const hipY = floorY - 102 * pScale + pelvisDropY;
+      const shoulderY = hipY - 60 * pScale + (1.0 - bounce) * 5 * pScale;
+
+      // 0. Floor Contact Shadow
       ctx.save();
-      const shadowScale = Math.max(0.45, 1.0 + bounceY / 180);
-      const shadowRx = baseW * 0.42 * perspectiveScale * shadowScale;
-      const shadowRy = Math.max(6, baseH * 0.085 * perspectiveScale * shadowScale);
-
-      const sGrad = ctx.createRadialGradient(
-        cx + swayX, floorY, 2,
-        cx + swayX, floorY, shadowRx
-      );
-      sGrad.addColorStop(0, 'rgba(12, 6, 3, 0.68)');
-      sGrad.addColorStop(0.6, 'rgba(18, 9, 4, 0.35)');
-      sGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-      ctx.fillStyle = sGrad;
+      const shRx = 72 * pScale;
+      const shRy = 14 * pScale;
+      const shGrad = ctx.createRadialGradient(cx, floorY, 2, cx, floorY, shRx);
+      shGrad.addColorStop(0, 'rgba(12, 6, 3, 0.62)');
+      shGrad.addColorStop(0.6, 'rgba(18, 9, 4, 0.30)');
+      shGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = shGrad;
       ctx.beginPath();
-      ctx.ellipse(cx + swayX, floorY, shadowRx, shadowRy, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, floorY, shRx, shRy, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
-      // 2. Draw Articulated / Wave-Deformed Dancing Garfield
-      ctx.save();
-      ctx.translate(cx + swayX, floorY - drawH * 0.46 + bounceY);
-      ctx.rotate(rotation);
-      ctx.scale(flipX, 1);
+      // 1. TAIL (2-Pass seamless outline + fill + black stripes)
+      const tailP0 = { x: cx - stepSide * 14 * pScale, y: hipY + 6 * pScale };
+      const tailP1 = {
+        x: cx - (stepSide * 50 + 24) * pScale,
+        y: hipY - 10 * pScale + Math.sin(dancePhase * 2 - 0.8) * 15 * pScale
+      };
+      const tailP2 = {
+        x: cx - (stepSide * 78 + 38) * pScale,
+        y: hipY - 38 * pScale + Math.cos(dancePhase * 2 - 0.5) * 18 * pScale
+      };
 
-      // Slice-warp rendering: divide Garfield into horizontal bands so his head bobs,
-      // belly grooves, and feet tap independently!
-      const numSlices = 24;
-      const srcSliceH = garfieldImage.height / numSlices;
-      const dstSliceH = drawH / numSlices;
+      drawCapsule(tailP0, tailP1, 10.5 * pScale + OUTLINE, 11.5 * pScale + OUTLINE, BLACK);
+      drawCapsule(tailP1, tailP2, 11.5 * pScale + OUTLINE, 9.5 * pScale + OUTLINE, BLACK);
+      drawCapsule(tailP0, tailP1, 10.5 * pScale, 11.5 * pScale, ORANGE);
+      drawCapsule(tailP1, tailP2, 11.5 * pScale, 9.5 * pScale, ORANGE);
+      drawCapsule(
+        { x: (tailP1.x + tailP2.x) * 0.5, y: (tailP1.y + tailP2.y) * 0.5 },
+        tailP2,
+        10 * pScale,
+        9.5 * pScale,
+        BLACK
+      );
 
-      for (let s = 0; s < numSlices; s++) {
-        const v = s / numSlices; // 0 = top of head/ears, 0.5 = belly, 1.0 = bottom paws
-        // Wave groove that ripples from head to paws
-        const waveOffsetX =
-          Math.sin(danceTime * 4 - v * Math.PI * 2.2) *
-          (10 * state.danceEnergy + state.stemGuitar * 18) *
-          Math.sin(v * Math.PI);
+      // 2. LEGS & FEET WITH 2-BONE INVERSE KINEMATICS
+      const lHip = { x: cx - 20 * pScale, y: hipY + 11 * pScale };
+      const rHip = { x: cx + 20 * pScale, y: hipY + 11 * pScale };
+      const lFoot = { x: baseCx - 35 * pScale + stepSide * 12 * pScale + lKickX, y: floorY - lLift };
+      const rFoot = { x: baseCx + 35 * pScale + stepSide * 12 * pScale + rKickX, y: floorY - rLift };
 
-        ctx.drawImage(
-          garfieldImage,
-          0, s * srcSliceH, garfieldImage.width, srcSliceH + 0.8,
-          -drawW * 0.5 + waveOffsetX,
-          -drawH * 0.5 + s * dstSliceH,
-          drawW,
-          dstSliceH + 0.6
-        );
+      const lKnee = solveIK2Bone(lHip, lFoot, 50 * pScale, 49 * pScale, -1);
+      const rKnee = solveIK2Bone(rHip, rFoot, 50 * pScale, 49 * pScale, 1);
+
+      const legs = [
+        { hip: lHip, knee: lKnee, foot: lFoot, dir: -1, up: lLift > 8 * pScale },
+        { hip: rHip, knee: rKnee, foot: rFoot, dir: 1, up: rLift > 8 * pScale }
+      ];
+
+      // Pass 1: Leg & Foot Black Outlines
+      for (const lg of legs) {
+        drawCapsule(lg.hip, lg.knee, 13 * pScale + OUTLINE, 11 * pScale + OUTLINE, BLACK);
+        drawCapsule(lg.knee, lg.foot, 11 * pScale + OUTLINE, 9.5 * pScale + OUTLINE, BLACK);
+        const fAng = lg.up ? -0.35 * lg.dir : 0.08 * lg.dir;
+        const fEnd = {
+          x: lg.foot.x + lg.dir * 27 * pScale * Math.cos(fAng),
+          y: lg.foot.y + 27 * pScale * Math.sin(fAng)
+        };
+        drawCapsule({ x: lg.foot.x - lg.dir * 5 * pScale, y: lg.foot.y }, fEnd, 10.5 * pScale + OUTLINE, 13 * pScale + OUTLINE, BLACK);
       }
 
-      ctx.restore();
+      // Pass 2: Seamless Orange Fill + Toes
+      for (const lg of legs) {
+        drawCapsule(lg.hip, lg.knee, 13 * pScale, 11 * pScale, ORANGE);
+        drawCapsule(lg.knee, lg.foot, 11 * pScale, 9.5 * pScale, ORANGE);
+        const fAng = lg.up ? -0.35 * lg.dir : 0.08 * lg.dir;
+        const fEnd = {
+          x: lg.foot.x + lg.dir * 27 * pScale * Math.cos(fAng),
+          y: lg.foot.y + 27 * pScale * Math.sin(fAng)
+        };
+        drawCapsule({ x: lg.foot.x - lg.dir * 5 * pScale, y: lg.foot.y }, fEnd, 10.5 * pScale, 13 * pScale, ORANGE);
 
-      // 3. Draw Floating Musical Notes around Garfield
+        // Toe lines
+        ctx.strokeStyle = BLACK;
+        ctx.lineWidth = 2.6 * pScale;
+        ctx.lineCap = 'round';
+        for (const ti of [-4.2 * pScale, 4.2 * pScale]) {
+          ctx.beginPath();
+          ctx.moveTo(fEnd.x - lg.dir * 3 * pScale, fEnd.y + ti);
+          ctx.lineTo(fEnd.x + lg.dir * 9.5 * pScale, fEnd.y + ti);
+          ctx.stroke();
+        }
+      }
+
+      // 3. TORSO & WIDE ARTICULATED ARMS + HANDS
+      const lSh = { x: cx - 34 * pScale + torsoTilt, y: shoulderY + 6 * pScale };
+      const rSh = { x: cx + 34 * pScale + torsoTilt, y: shoulderY + 6 * pScale };
+
+      const lElbow = {
+        x: lSh.x + Math.cos(lUpperAng) * 45 * pScale,
+        y: lSh.y + Math.sin(lUpperAng) * 45 * pScale
+      };
+      const lWrist = {
+        x: lElbow.x + Math.cos(lForeAng) * 43 * pScale,
+        y: lElbow.y + Math.sin(lForeAng) * 43 * pScale
+      };
+
+      const rElbow = {
+        x: rSh.x + Math.cos(rUpperAng) * 45 * pScale,
+        y: rSh.y + Math.sin(rUpperAng) * 45 * pScale
+      };
+      const rWrist = {
+        x: rElbow.x + Math.cos(rForeAng) * 43 * pScale,
+        y: rElbow.y + Math.sin(rForeAng) * 43 * pScale
+      };
+
+      const bellyTop = { x: cx + torsoTilt, y: shoulderY + 7 * pScale };
+      const bellyBot = { x: cx, y: hipY + 8 * pScale };
+
+      const arms = [
+        { sh: lSh, el: lElbow, wr: lWrist, ang: lForeAng },
+        { sh: rSh, el: rElbow, wr: rWrist, ang: rForeAng }
+      ];
+
+      // Pass 1: Torso & Arms Black Outlines
+      drawCapsule(bellyTop, bellyBot, 33.5 * pScale + OUTLINE, 41 * pScale + OUTLINE, BLACK);
+      for (const a of arms) {
+        drawCapsule(a.sh, a.el, 11 * pScale + OUTLINE, 9.5 * pScale + OUTLINE, BLACK);
+        drawCapsule(a.el, a.wr, 9.5 * pScale + OUTLINE, 8.5 * pScale + OUTLINE, BLACK);
+        for (const fOff of [-0.42, 0.0, 0.42]) {
+          const fa = a.ang + fOff;
+          const fTip = { x: a.wr.x + Math.cos(fa) * 14.5 * pScale, y: a.wr.y + Math.sin(fa) * 14.5 * pScale };
+          drawCapsule(a.wr, fTip, 5.8 * pScale + OUTLINE, 4.8 * pScale + OUTLINE, BLACK);
+        }
+        ctx.fillStyle = BLACK;
+        ctx.beginPath();
+        ctx.arc(a.wr.x, a.wr.y, 10.5 * pScale + OUTLINE, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Pass 2: Torso & Arms Seamless Orange Fill + Tiger Stripes
+      drawCapsule(bellyTop, bellyBot, 33.5 * pScale, 41 * pScale, ORANGE);
+
+      ctx.fillStyle = BLACK;
+      for (const [syOff, slen] of [[-15, 14], [0, 16], [14, 14]]) {
+        const sy = (shoulderY + hipY) * 0.5 + syOff * pScale;
+        const bx = cx + torsoTilt * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(bx - 37 * pScale, sy - 2.6 * pScale);
+        ctx.lineTo(bx - (37 - slen) * pScale, sy + 1 * pScale);
+        ctx.lineTo(bx - 37 * pScale, sy + 3.6 * pScale);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(bx + 37 * pScale, sy - 2.6 * pScale);
+        ctx.lineTo(bx + (37 - slen) * pScale, sy + 1 * pScale);
+        ctx.lineTo(bx + 37 * pScale, sy + 3.6 * pScale);
+        ctx.fill();
+      }
+
+      for (const a of arms) {
+        drawCapsule(a.sh, a.el, 11 * pScale, 9.5 * pScale, ORANGE);
+        drawCapsule(a.el, a.wr, 9.5 * pScale, 8.5 * pScale, ORANGE);
+        ctx.fillStyle = ORANGE;
+        ctx.beginPath();
+        ctx.arc(a.wr.x, a.wr.y, 10.5 * pScale, 0, Math.PI * 2);
+        ctx.fill();
+        for (const fOff of [-0.42, 0.0, 0.42]) {
+          const fa = a.ang + fOff;
+          const fTip = { x: a.wr.x + Math.cos(fa) * 14.5 * pScale, y: a.wr.y + Math.sin(fa) * 14.5 * pScale };
+          drawCapsule(a.wr, fTip, 5.8 * pScale, 4.8 * pScale, ORANGE);
+        }
+      }
+
+      // 4. AUTHENTIC GARFIELD HEAD (Bobs & tilts with the beat!)
+      if (garfieldHeadLoaded) {
+        const headCx = cx + torsoTilt * 1.35;
+        const headCy = shoulderY - 28 * pScale + (1.0 - bounce) * 5.5 * pScale;
+        const headTiltRad = (-stepSide * 9 * Math.PI) / 180;
+        const hw = garfieldHeadImg.width * 0.47 * pScale;
+        const hh = garfieldHeadImg.height * 0.47 * pScale;
+
+        ctx.save();
+        ctx.translate(headCx, headCy);
+        ctx.rotate(headTiltRad);
+        ctx.drawImage(garfieldHeadImg, -hw * 0.48, -hh * 0.54, hw, hh);
+        ctx.restore();
+      }
+
+      // 5. Floating Musical Notes
       ctx.save();
       for (let i = musicNotes.length - 1; i >= 0; i--) {
         const n = musicNotes[i];
-        n.x += n.vx + Math.sin(danceTime + i) * 0.4;
+        n.x += n.vx + Math.sin(dancePhase + i) * 0.4;
         n.y += n.vy;
         n.life -= 0.018;
         if (n.life <= 0) {
@@ -1187,7 +1366,6 @@
 
       let artRect = { x: 0, y: 0, w: width, h: height };
 
-      // 1. Draw Background Scene
       if (isLoaded) {
         const scale = Math.max(width / activeImg.width, height / activeImg.height) * 1.03;
         const drawW = activeImg.width * scale;
@@ -1198,7 +1376,6 @@
         ctx.drawImage(activeImg, offsetX, offsetY, drawW, drawH);
       }
 
-      // 2. Dynamic Sunlight Rays / Rave Lights / Warm Glow
       const flicker = Math.sin(time * 4.5) * 0.04 + Math.sin(time * 9.2) * 0.03;
       const glowPower = Math.min(
         1.5,
@@ -1210,7 +1387,6 @@
         ctx.globalCompositeOperation = 'screen';
 
         if (sceneId === 'train') {
-          // Warm golden afternoon sunlight streaming through the left train windows onto the floor
           const winX = width * 0.22;
           const winY = height * 0.36;
           const sunRadius = Math.max(width, height) * (0.45 + glowPower * 0.15);
@@ -1257,10 +1433,10 @@
         ctx.restore();
       }
 
-      // 3. Draw Dancing Garfield!
-      drawDancingGarfield(artRect);
+      // Draw Rigged Human-Dancing Garfield!
+      drawRiggedGarfield();
 
-      // 4. Floating Golden Dust Motes / Embers
+      // Floating Golden Motes / Embers
       const activeEmberCount = Math.floor(MAX_EMBERS * Math.min(1, state.emberIntensity + state.stemBass * 0.4));
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
@@ -1290,7 +1466,7 @@
       }
       ctx.restore();
 
-      // 5. Optional Rain Layer
+      // Optional Rain Layer
       const activeRainCount = Math.floor(MAX_RAIN * state.rainDensity);
       if (activeRainCount > 0) {
         const windRad = (state.windAngleDeg * Math.PI) / 180;
@@ -1320,7 +1496,7 @@
         ctx.restore();
       }
 
-      // 6. Optional Foggy Windowpane (#4)
+      // Optional Foggy Windowpane (#4)
       if (state.windowFogEnabled && state.fogMaxOpacity > 0.01) {
         for (const gd of glassDrops) {
           gd.y += gd.vy * (1 + state.rainDensity * 0.8 + state.stemBass * 1.5);
@@ -1334,7 +1510,7 @@
         ctx.restore();
       }
 
-      // 7. Interactive 6 Acoustic Guitar Strings (#5)
+      // Interactive 6 Acoustic Guitar Strings (#5)
       drawGuitarStrings();
 
       requestAnimationFrame(render);
@@ -1414,13 +1590,13 @@
     canvas.addEventListener('mousedown', (e) => {
       if (state.showGarfield) {
         const gx = width * state.garfX;
-        const gy = height * state.garfY - 90 * state.garfieldScale;
+        const gy = height * state.garfY - 110 * state.garfieldScale;
         const dist = Math.hypot(e.clientX - gx, e.clientY - gy);
-        if (dist < 140 * state.garfieldScale) {
+        if (dist < 150 * state.garfieldScale) {
           state.draggingGarfield = true;
           state.dragOffsetX = e.clientX - width * state.garfX;
           state.dragOffsetY = e.clientY - height * state.garfY;
-          spawnMusicNote(gx, gy);
+          spawnMusicNote(gx, gy - 60);
           return;
         }
       }
@@ -1436,7 +1612,7 @@
 
       if (state.draggingGarfield) {
         state.garfX = Math.max(0.08, Math.min(0.92, (e.clientX - state.dragOffsetX) / width));
-        state.garfY = Math.max(0.25, Math.min(0.96, (e.clientY - state.dragOffsetY) / height));
+        state.garfY = Math.max(0.35, Math.min(0.96, (e.clientY - state.dragOffsetY) / height));
       }
 
       wipeFogAt(e.clientX, e.clientY, 52, 0.65);
@@ -1466,7 +1642,7 @@
       document.getElementById('dance-style-btn').textContent = `🕺 Move: ${moveName}`;
       document.getElementById('dance-move-label').textContent = moveName;
       if (state.showGarfield) {
-        spawnMusicNote(width * state.garfX, height * state.garfY - 80);
+        spawnMusicNote(width * state.garfX, height * state.garfY - 190);
       }
     }
 
@@ -1586,7 +1762,7 @@
       audioEl.load();
 
       trackNameLabel.textContent = file.name.replace(/\.[^/.]+$/, '');
-      trackStatusLabel.textContent = 'Garfield dancing to 4 stems!';
+      trackStatusLabel.textContent = 'Garfield IK dancing to 4 stems!';
       playPauseBtn.disabled = false;
       seekSlider.disabled = false;
 
