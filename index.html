@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Would That I — Interactive 2D Forest, Window & Guitar Visualizer</title>
+  <style>
+    :root {
+      --bg-dark: #090e0a;
+      --panel-bg: rgba(12, 19, 15, 0.82);
+      --panel-border: rgba(215, 188, 105, 0.28);
+      --amber: #e8b954;
+      --rain-blue: #9ed4b8;
+      --text-main: #f3efe6;
+      --text-dim: #aab8ad;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      font-family: 'Georgia', 'Palatino Linotype', 'Book Antiqua', serif;
+      color: var(--text-main);
+    }
+
+    #scene-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* Drag & Drop Overlay */
+    #drop-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 18, 13, 0.86);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      border: 3px dashed var(--amber);
+      margin: 20px;
+      border-radius: 20px;
+    }
+
+    #drop-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #drop-overlay h2 {
+      font-size: 2rem;
+      color: var(--amber);
+      margin-bottom: 0.5rem;
+      font-weight: normal;
+      letter-spacing: 0.04em;
+    }
+
+    #drop-overlay p {
+      color: var(--text-dim);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Start Banner */
+    #start-banner {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(14px);
+      padding: 10px 22px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(215, 185, 90, 0.15);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    #start-banner.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -15px);
+    }
+
+    .title-group h1 {
+      font-size: 1rem;
+      font-weight: normal;
+      letter-spacing: 0.04em;
+      color: #f7e6b7;
+    }
+
+    .title-group span {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Interactive Hint Pill */
+    #human-hint {
+      position: fixed;
+      top: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      background: rgba(12, 19, 15, 0.55);
+      border: 1px solid rgba(232, 185, 84, 0.22);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.75rem;
+      color: #e4decb;
+      pointer-events: none;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      transition: opacity 0.5s ease;
+    }
+
+    /* Main Control Dock */
+    #controls-dock {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1020px, 96vw);
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(16px);
+      border-radius: 18px;
+      padding: 14px 18px;
+      z-index: 20;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.78), 0 0 35px rgba(190, 165, 75, 0.1);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    #controls-dock.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 30px);
+    }
+
+    .dock-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 11px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+      margin-bottom: 11px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+    }
+
+    button, .file-label {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 7px 11px;
+      border-radius: 9px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    button:hover, .file-label:hover {
+      background: rgba(232, 185, 84, 0.18);
+      border-color: var(--amber);
+      transform: translateY(-1px);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #b88a28, #6e5211);
+      border-color: #f3cf7a;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(184, 138, 40, 0.4);
+    }
+
+    button.active-toggle {
+      background: rgba(158, 212, 184, 0.2);
+      border-color: var(--rain-blue);
+      color: #dff7e9;
+    }
+
+    button.ember-toggle.active-toggle {
+      background: rgba(232, 185, 84, 0.24);
+      border-color: var(--amber);
+      color: #fff0c4;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    /* Audio Player Bar */
+    .player-bar {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex: 1;
+      min-width: 240px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 6px 11px;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .track-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 115px;
+      max-width: 175px;
+    }
+
+    .track-name {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #f5df9e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-status {
+      font-size: 0.67rem;
+      color: var(--text-dim);
+    }
+
+    .seek-slider {
+      flex: 1;
+      accent-color: var(--amber);
+      cursor: pointer;
+    }
+
+    .time-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Instrument Dissection Meters */
+    .dissection-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding-bottom: 11px;
+      margin-bottom: 11px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stem-card {
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stem-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.71rem;
+      color: var(--text-dim);
+    }
+
+    .stem-header strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .stem-bar-bg {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .stem-bar-fill {
+      height: 100%;
+      width: 4%;
+      border-radius: 99px;
+      transition: width 0.05s linear;
+    }
+
+    /* Sliders Grid */
+    .sliders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 12px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.73rem;
+      color: var(--text-dim);
+    }
+
+    .control-header span.val {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--amber);
+      cursor: pointer;
+      height: 5px;
+      border-radius: 5px;
+    }
+
+    input[type="range"].rain-range {
+      accent-color: var(--rain-blue);
+    }
+
+    /* Floating Zen Button */
+    #zen-btn {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 30;
+      background: rgba(12, 19, 15, 0.65);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-dim);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    #zen-btn:hover {
+      color: var(--text-main);
+      border-color: var(--amber);
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="scene-canvas"></canvas>
+
+  <div id="drop-overlay">
+    <h2>Drop "Would That I" Audio File Here</h2>
+    <p>Dissects Guitar, Vocals, Kick/Bass & Percussion in real time</p>
+  </div>
+
+  <div id="start-banner">
+    <div class="title-group">
+      <h1>Would That I — Foggy Window & Interactive Guitar</h1>
+      <span>Wipe the foggy window with your mouse • Strum the strings or press A S D F G H / Space</span>
+    </div>
+    <button id="start-experience-btn" class="primary">▶ Start Rain & Forest Ambience</button>
+  </div>
+
+  <div id="human-hint">
+    ✋ <b>Wipe window condensation</b> with your mouse • 🎸 <b>Strum the 6 guitar strings</b> on the right (or keys <b>A S D F G H</b> &amp; <b>1-4</b> to switch chords: <span id="active-chord-name" style="color:#f5df9e;font-weight:bold;">G Major</span>)
+  </div>
+
+  <button id="zen-btn" title="Toggle Controls (Shortcut: H)">Hide UI (H)</button>
+
+  <div id="controls-dock">
+    <div class="dock-top">
+      <div class="btn-row">
+        <button id="rain-audio-btn">🌧️ Rain: OFF</button>
+        <button id="demo-music-btn" class="ember-toggle" title="Plays a built-in acoustic woodland chord progression">🎸 Auto-Fingerpick: OFF</button>
+        <button id="window-fog-btn" class="active-toggle" title="Toggle cozy rain-streaked foggy cabin window that you can wipe by hand">🪟 Foggy Window: ON</button>
+        <button id="refog-btn" title="Breathe warm condensation back onto the window glass">💨 Breathe Fog</button>
+        <button id="scene-switch-btn" class="ember-toggle active-toggle">🌳 Art: 2D Gnarled Oak</button>
+        <button id="fit-mode-btn">📐 Fit: Full Drawing</button>
+        <label class="file-label" for="song-upload">
+          🎵 Load Song (MP3/WAV)
+        </label>
+        <input type="file" id="song-upload" accept="audio/*" />
+      </div>
+
+      <div class="player-bar">
+        <button id="play-pause-song-btn" disabled style="padding: 5px 9px;">▶</button>
+        <div class="track-info">
+          <span class="track-name" id="track-name-label">No song loaded yet</span>
+          <span class="track-status" id="track-status-label">Drop MP3 or play guitar strings!</span>
+        </div>
+        <input type="range" id="song-seek" class="seek-slider" min="0" max="100" value="0" step="0.1" disabled />
+        <span class="time-label" id="song-time-label">0:00 / 0:00</span>
+      </div>
+    </div>
+
+    <!-- Real-Time 4-Instrument Dissector -->
+    <div class="dissection-row">
+      <div class="stem-card">
+        <div class="stem-header">
+          <strong>🎸 Acoustic Guitar</strong>
+          <span id="stem-guitar-val">Pluck / Mid</span>
+        </div>
+        <div class="stem-bar-bg">
+          <div class="stem-bar-fill" id="stem-guitar-bar" style="background: linear-gradient(90deg, #e8b954, #fff0a8);"></div>
+        </div>
+      </div>
+
+      <div class="stem-card">
+        <div class="stem-header">
+          <strong>🎤 Vocals &amp; Choir</strong>
+          <span id="stem-vocal-val">Warmth / Sun</span>
+        </div>
+        <div class="stem-bar-bg">
+          <div class="stem-bar-fill" id="stem-vocal-bar" style="background: linear-gradient(90deg, #a2d98c, #e2ffc4);"></div>
+        </div>
+      </div>
+
+      <div class="stem-card">
+        <div class="stem-header">
+          <strong>🥁 Kick Stomp &amp; Bass</strong>
+          <span id="stem-bass-val">Ember Blaze</span>
+        </div>
+        <div class="stem-bar-bg">
+          <div class="stem-bar-fill" id="stem-bass-bar" style="background: linear-gradient(90deg, #ff7038, #ffbe6b);"></div>
+        </div>
+      </div>
+
+      <div class="stem-card">
+        <div class="stem-header">
+          <strong>👏 Claps &amp; Shakers</strong>
+          <span id="stem-perc-val">Rain Shimmer</span>
+        </div>
+        <div class="stem-bar-bg">
+          <div class="stem-bar-fill" id="stem-perc-bar" style="background: linear-gradient(90deg, #7ec8ff, #d4f0ff);"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sliders-grid">
+      <div class="control-group">
+        <div class="control-header">
+          <span>Rain Intensity</span>
+          <span class="val" id="rain-density-val">75%</span>
+        </div>
+        <input type="range" id="rain-density" class="rain-range" min="10" max="100" value="75" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <span>Sunbeam &amp; Ember Glow</span>
+          <span class="val" id="ember-intensity-val">75%</span>
+        </div>
+        <input type="range" id="ember-intensity" min="10" max="100" value="75" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <span>Window Condensation</span>
+          <span class="val" id="fog-opacity-val">65%</span>
+        </div>
+        <input type="range" id="fog-opacity" class="rain-range" min="0" max="100" value="65" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <span>Rain Ambience Vol</span>
+          <span class="val" id="ambience-vol-val">65%</span>
+        </div>
+        <input type="range" id="ambience-vol" class="rain-range" min="0" max="100" value="65" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <span>Music / Guitar Vol</span>
+          <span class="val" id="music-vol-val">85%</span>
+        </div>
+        <input type="range" id="music-vol" min="0" max="100" value="85" />
+      </div>
+    </div>
+  </div>
+
+  <audio id="song-audio" crossorigin="anonymous"></audio>
+
+  <script>
+    // ============================================================================
+    // 1. STATE & ARTWORK ASSETS
+    // ============================================================================
+    const canvas = document.getElementById('scene-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const oakImage = new Image();
+    oakImage.src = 'oak_canopy_2d.jpg';
+    let oakLoaded = false;
+    oakImage.onload = () => { oakLoaded = true; };
+
+    const twilightImage = new Image();
+    twilightImage.src = 'forest_bg.jpg';
+    let twilightLoaded = false;
+    twilightImage.onload = () => { twilightLoaded = true; };
+
+    const state = {
+      sceneMode: 'oak',        // 'oak' or 'twilight'
+      fitMode: 'contain',      // 'contain' or 'cover'
+      windowFogEnabled: true,
+      fogMaxOpacity: 0.65,
+      rainDensity: 0.75,
+      emberIntensity: 0.75,
+      windAngleDeg: -9,
+      ambienceVolume: 0.65,
+      musicVolume: 0.85,
+      lightningFlash: 0,
+      mouseX: 0,
+      mouseY: 0,
+      targetMouseX: 0,
+      targetMouseY: 0,
+      lastMousePxX: null,
+      lastMousePxY: null,
+      // Dissected Instrument Envelopes (0.0 to 1.0)
+      stemBass: 0,             // 40-150Hz: Kick stomp & bass
+      stemGuitar: 0,           // 180-1100Hz transient plucks
+      stemVocal: 0,            // 300-2800Hz sustained warmth
+      stemPerc: 0,             // 3000-12000Hz claps, shakers, cymbals
+      prevGuitarRaw: 0,
+      ambiencePlaying: false,
+      demoPlaying: false,
+      songPlaying: false,
+      uiHidden: false,
+      activeChordIdx: 0
+    };
+
+    // ============================================================================
+    // 2. #4: TACTILE FOGGY WINDOWPANE & CONDENSATION DROPLETS
+    // ============================================================================
+    const fogCanvas = document.createElement('canvas');
+    const fogCtx = fogCanvas.getContext('2d');
+    const glassDrops = [];
+
+    function initFogCanvas() {
+      fogCanvas.width = window.innerWidth;
+      fogCanvas.height = window.innerHeight;
+      fillWindowCondensation(0.85);
+
+      glassDrops.length = 0;
+      for (let i = 0; i < 28; i++) {
+        glassDrops.push(createGlassDrop(true));
+      }
+    }
+
+    function fillWindowCondensation(amount = 0.85) {
+      fogCtx.save();
+      fogCtx.globalCompositeOperation = 'source-over';
+      const grad = fogCtx.createRadialGradient(
+        fogCanvas.width * 0.5, fogCanvas.height * 0.5, fogCanvas.width * 0.1,
+        fogCanvas.width * 0.5, fogCanvas.height * 0.5, fogCanvas.width * 0.75
+      );
+      grad.addColorStop(0, `rgba(195, 212, 202, ${amount * 0.72})`);
+      grad.addColorStop(0.6, `rgba(175, 196, 185, ${amount * 0.88})`);
+      grad.addColorStop(1, `rgba(150, 175, 165, ${amount * 0.96})`);
+      fogCtx.fillStyle = grad;
+      fogCtx.fillRect(0, 0, fogCanvas.width, fogCanvas.height);
+      fogCtx.restore();
+    }
+
+    function wipeFogAt(x, y, radius = 48, strength = 0.85) {
+      if (!state.windowFogEnabled) return;
+      fogCtx.save();
+      fogCtx.globalCompositeOperation = 'destination-out';
+      const rGrad = fogCtx.createRadialGradient(x, y, radius * 0.15, x, y, radius);
+      rGrad.addColorStop(0, `rgba(0, 0, 0, ${strength})`);
+      rGrad.addColorStop(0.6, `rgba(0, 0, 0, ${strength * 0.5})`);
+      rGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      fogCtx.fillStyle = rGrad;
+      fogCtx.beginPath();
+      fogCtx.arc(x, y, radius, 0, Math.PI * 2);
+      fogCtx.fill();
+      fogCtx.restore();
+    }
+
+    function createGlassDrop(randomY = false) {
+      return {
+        x: Math.random() * window.innerWidth,
+        y: randomY ? Math.random() * window.innerHeight : -10,
+        r: 2.2 + Math.random() * 2.8,
+        vy: 0.15 + Math.random() * 0.55,
+        stuckTimer: Math.random() * 80
+      };
+    }
+
+    // ============================================================================
+    // 3. #5: INTERACTIVE 6-STRING ACOUSTIC GUITAR ("WOULD THAT I" CHORDS)
+    // ============================================================================
+    const CHORDS = [
+      {
+        name: 'G Major (Warm Open)',
+        notes: [98.00, 123.47, 146.83, 196.00, 293.66, 392.00], // G2 B2 D3 G3 D4 G4
+        keys: ['A', 'S', 'D', 'F', 'G', 'H']
+      },
+      {
+        name: 'E Minor 7 (Woodland Shelter)',
+        notes: [82.41, 123.47, 146.83, 196.00, 293.66, 329.63], // E2 B2 D3 G3 D4 E4
+        keys: ['A', 'S', 'D', 'F', 'G', 'H']
+      },
+      {
+        name: 'C Add9 (Canopy Sunlight)',
+        notes: [130.81, 164.81, 196.00, 293.66, 329.63, 392.00], // C3 E3 G3 D4 E4 G4
+        keys: ['A', 'S', 'D', 'F', 'G', 'H']
+      },
+      {
+        name: 'D Major (Roaring Blaze)',
+        notes: [146.83, 220.00, 293.66, 369.99, 440.00, 587.33], // D3 A3 D4 F#4 A4 D5
+        keys: ['A', 'S', 'D', 'F', 'G', 'H']
+      }
+    ];
+
+    const guitarStrings = [];
+    for (let i = 0; i < 6; i++) {
+      guitarStrings.push({
+        index: i,
+        vibration: 0,
+        phase: 0,
+        glow: 0
+      });
+    }
+
+    function getGuitarGeometry() {
+      // Positioned cleanly along the right side of the window so you can strum across them
+      const panelWidth = Math.min(210, width * 0.19);
+      const rightMargin = 28;
+      const xStart = width - panelWidth - rightMargin;
+      const yTop = height * 0.16;
+      const yBottom = height * 0.76;
+      const spacing = panelWidth / 5;
+      return { xStart, yTop, yBottom, spacing, panelWidth };
+    }
+
+    function pluckGuitarString(stringIdx, velocity = 0.25, spawnVisuals = true) {
+      initAudioEngine();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const chord = CHORDS[state.activeChordIdx];
+      const freq = chord.notes[stringIdx];
+      const s = guitarStrings[stringIdx];
+      s.vibration = Math.min(18, 9 + velocity * 30);
+      s.glow = 1.0;
+
+      // Synthesize rich acoustic guitar string pluck
+      const now = audioCtx.currentTime;
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const osc3 = audioCtx.createOscillator();
+
+      osc1.type = 'triangle';
+      osc2.type = 'sawtooth';
+      osc3.type = 'sine';
+
+      osc1.frequency.setValueAtTime(freq, now);
+      osc2.frequency.setValueAtTime(freq * 1.0015, now); // warm chorus detune
+      osc3.frequency.setValueAtTime(freq * 2, now);      // octave overtone
+
+      // Acoustic body lowpass envelope
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(freq * 6.5, now);
+      filter.frequency.exponentialRampToValueAtTime(freq * 1.35, now + 1.6);
+
+      const noteGain = audioCtx.createGain();
+      const vol = velocity * state.musicVolume;
+      noteGain.gain.setValueAtTime(0.0001, now);
+      noteGain.gain.linearRampToValueAtTime(vol, now + 0.018);
+      noteGain.gain.exponentialRampToValueAtTime(vol * 0.35, now + 0.35);
+      noteGain.gain.exponentialRampToValueAtTime(0.0004, now + 2.6);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      osc3.connect(filter);
+      filter.connect(noteGain);
+      noteGain.connect(analyser);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc3.start(now);
+      osc1.stop(now + 2.65);
+      osc2.stop(now + 2.65);
+      osc3.stop(now + 2.65);
+
+      if (spawnVisuals) {
+        const geom = getGuitarGeometry();
+        const sx = geom.xStart + stringIdx * geom.spacing;
+        const sy = (geom.yTop + geom.yBottom) * 0.5 + (Math.random() - 0.5) * 120;
+        for (let k = 0; k < 4; k++) {
+          embers.push({
+            x: sx,
+            y: sy,
+            vx: -(1.0 + Math.random() * 2.2),
+            vy: -(0.6 + Math.random() * 1.6),
+            size: 2.0 + Math.random() * 2.4,
+            alpha: 0.95,
+            phase: Math.random() * Math.PI * 2,
+            hue: 46 + stringIdx * 4
+          });
+        }
+      }
+    }
+
+    function strumFullChord() {
+      for (let i = 0; i < 6; i++) {
+        setTimeout(() => pluckGuitarString(i, 0.22, true), i * 48);
+      }
+    }
+
+    function setChord(idx) {
+      state.activeChordIdx = idx % CHORDS.length;
+      document.getElementById('active-chord-name').textContent = CHORDS[state.activeChordIdx].name;
+    }
+
+    // ============================================================================
+    // 4. PROCEDURAL WEB AUDIO ENGINE & 4-STEM INSTRUMENT DISSECTOR
+    // ============================================================================
+    let audioCtx = null;
+    let masterAmbienceGain = null;
+    let rainPinkGain = null;
+    let rainPatterGain = null;
+    let fireCrackleGain = null;
+    let analyser = null;
+    let freqData = null;
+    let songSourceNode = null;
+    let songGainNode = null;
+    let demoIntervalId = null;
+
+    function initAudioEngine() {
+      if (audioCtx) return;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContextClass();
+
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 1024; // Higher resolution for accurate instrument frequency dissection
+      analyser.smoothingTimeConstant = 0.78;
+      freqData = new Uint8Array(analyser.frequencyBinCount);
+
+      masterAmbienceGain = audioCtx.createGain();
+      masterAmbienceGain.gain.value = 0.001;
+      masterAmbienceGain.connect(audioCtx.destination);
+
+      // --- LAYER A: Pink Noise Rain through Tree Leaves ---
+      const bufferSize = audioCtx.sampleRate * 4;
+      const pinkBuffer = audioCtx.createBuffer(2, bufferSize, audioCtx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const output = pinkBuffer.getChannelData(ch);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+          b6 = white * 0.115926;
+        }
+      }
+
+      const pinkSource = audioCtx.createBufferSource();
+      pinkSource.buffer = pinkBuffer;
+      pinkSource.loop = true;
+
+      const rainFilter = audioCtx.createBiquadFilter();
+      rainFilter.type = 'bandpass';
+      rainFilter.frequency.value = 1100;
+      rainFilter.Q.value = 0.45;
+
+      rainPinkGain = audioCtx.createGain();
+      rainPinkGain.gain.value = 0.75 * state.rainDensity;
+
+      pinkSource.connect(rainFilter);
+      rainFilter.connect(rainPinkGain);
+      rainPinkGain.connect(masterAmbienceGain);
+      pinkSource.start();
+
+      // --- LAYER B: Raindrops Hitting Window & Oak Leaves ---
+      const patterBuffer = audioCtx.createBuffer(2, bufferSize, audioCtx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const out = patterBuffer.getChannelData(ch);
+        let env = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          if (Math.random() < 0.0045) {
+            env = 0.4 + Math.random() * 0.6;
+          }
+          env *= 0.992;
+          out[i] = (Math.random() * 2 - 1) * env * 0.18;
+        }
+      }
+
+      const patterSource = audioCtx.createBufferSource();
+      patterSource.buffer = patterBuffer;
+      patterSource.loop = true;
+
+      const patterFilter = audioCtx.createBiquadFilter();
+      patterFilter.type = 'bandpass';
+      patterFilter.frequency.value = 2500;
+      patterFilter.Q.value = 1.1;
+
+      rainPatterGain = audioCtx.createGain();
+      rainPatterGain.gain.value = 0.55 * state.rainDensity;
+
+      patterSource.connect(patterFilter);
+      patterFilter.connect(rainPatterGain);
+      rainPatterGain.connect(masterAmbienceGain);
+      patterSource.start();
+
+      // --- LAYER C: Warm Woodland Hearth Crackle ---
+      const crackleBuffer = audioCtx.createBuffer(2, bufferSize, audioCtx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const out = crackleBuffer.getChannelData(ch);
+        let popEnv = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          if (Math.random() < 0.0006) {
+            popEnv = 0.45 + Math.random() * 0.5;
+          }
+          popEnv *= 0.96;
+          out[i] = (Math.random() * 2 - 1) * popEnv * 0.3;
+        }
+      }
+
+      const crackleSource = audioCtx.createBufferSource();
+      crackleSource.buffer = crackleBuffer;
+      crackleSource.loop = true;
+
+      const crackleFilter = audioCtx.createBiquadFilter();
+      crackleFilter.type = 'highpass';
+      crackleFilter.frequency.value = 1800;
+
+      fireCrackleGain = audioCtx.createGain();
+      fireCrackleGain.gain.value = 0.3 * state.emberIntensity;
+
+      crackleSource.connect(crackleFilter);
+      crackleFilter.connect(fireCrackleGain);
+      fireCrackleGain.connect(masterAmbienceGain);
+      crackleSource.start();
+
+      // Connect <audio> element for uploaded song
+      const audioEl = document.getElementById('song-audio');
+      songSourceNode = audioCtx.createMediaElementSource(audioEl);
+      songGainNode = audioCtx.createGain();
+      songGainNode.gain.value = state.musicVolume;
+
+      songSourceNode.connect(songGainNode);
+      songGainNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+    }
+
+    function setAmbiencePlaying(play) {
+      initAudioEngine();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      state.ambiencePlaying = play;
+      const now = audioCtx.currentTime;
+      masterAmbienceGain.gain.cancelScheduledValues(now);
+      masterAmbienceGain.gain.setValueAtTime(masterAmbienceGain.gain.value, now);
+      if (play) {
+        masterAmbienceGain.gain.linearRampToValueAtTime(state.ambienceVolume, now + 0.8);
+      } else {
+        masterAmbienceGain.gain.linearRampToValueAtTime(0.0001, now + 0.5);
+      }
+      const btn = document.getElementById('rain-audio-btn');
+      btn.textContent = play ? '🌧️ Rain: ON' : '🌧️ Rain: OFF';
+      btn.classList.toggle('active-toggle', play);
+    }
+
+    function toggleDemoMusic(forceState) {
+      initAudioEngine();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      state.demoPlaying = forceState !== undefined ? forceState : !state.demoPlaying;
+      const btn = document.getElementById('demo-music-btn');
+      btn.textContent = state.demoPlaying ? '🎸 Auto-Fingerpick: ON' : '🎸 Auto-Fingerpick: OFF';
+      btn.classList.toggle('active-toggle', state.demoPlaying);
+
+      if (demoIntervalId) {
+        clearInterval(demoIntervalId);
+        demoIntervalId = null;
+      }
+
+      if (state.demoPlaying) {
+        const audioEl = document.getElementById('song-audio');
+        if (!audioEl.paused) audioEl.pause();
+
+        let step = 0;
+        const pattern = [0, 2, 3, 1, 4, 3, 5, 3]; // Fingerpicking string order
+        demoIntervalId = setInterval(() => {
+          if (!state.demoPlaying) return;
+          if (step % 16 === 0) {
+            setChord((state.activeChordIdx + 1) % CHORDS.length);
+          }
+          const strIdx = pattern[step % pattern.length];
+          const vel = (step % 4 === 0) ? 0.26 : 0.16;
+          pluckGuitarString(strIdx, vel, true);
+          step++;
+        }, 280);
+      }
+    }
+
+    // Dissect FFT bins into 4 distinct musical components:
+    // 1. Kick Stomp & Bass (40 - 150 Hz) -> bins 1..4
+    // 2. Fingerpicked Acoustic Guitar (180 - 950 Hz + transient pluck boost) -> bins 4..22
+    // 3. Vocals & Choir Harmonies (320 - 2800 Hz sustained energy) -> bins 8..65
+    // 4. Claps, Shakers & Cymbals (3200 - 12000 Hz) -> bins 75..260
+    function updateInstrumentDissection() {
+      if (!analyser) return;
+
+      analyser.getByteFrequencyData(freqData);
+
+      let bassSum = 0;
+      for (let i = 1; i <= 4; i++) bassSum += freqData[i];
+      const rawBass = bassSum / (4 * 255);
+
+      let guitarSum = 0;
+      for (let i = 4; i <= 22; i++) guitarSum += freqData[i];
+      const rawGuitar = guitarSum / (19 * 255);
+      // Detect plucked transient spikes in the guitar band
+      const pluckTransient = Math.max(0, rawGuitar - state.prevGuitarRaw) * 2.8;
+      state.prevGuitarRaw = rawGuitar * 0.8 + state.prevGuitarRaw * 0.2;
+
+      let vocalSum = 0;
+      for (let i = 8; i <= 65; i++) vocalSum += freqData[i];
+      const rawVocal = vocalSum / (58 * 255);
+
+      let percSum = 0;
+      for (let i = 75; i <= 220; i++) percSum += freqData[i];
+      const rawPerc = percSum / (146 * 255);
+
+      state.stemBass = state.stemBass * 0.72 + rawBass * 0.28;
+      state.stemGuitar = Math.min(1, state.stemGuitar * 0.70 + (rawGuitar * 0.75 + pluckTransient) * 0.30);
+      state.stemVocal = state.stemVocal * 0.82 + rawVocal * 0.18;
+      state.stemPerc = state.stemPerc * 0.68 + rawPerc * 0.32;
+
+      // Sympathetic guitar string vibration when an uploaded song plays guitar notes!
+      if (state.songPlaying && pluckTransient > 0.07) {
+        const targetStr = Math.floor(Math.random() * 6);
+        guitarStrings[targetStr].vibration = Math.max(guitarStrings[targetStr].vibration, pluckTransient * 35);
+        guitarStrings[targetStr].glow = Math.min(1, guitarStrings[targetStr].glow + 0.5);
+      }
+
+      // Update live UI meters
+      document.getElementById('stem-guitar-bar').style.width = `${Math.max(4, Math.min(100, state.stemGuitar * 115))}%`;
+      document.getElementById('stem-vocal-bar').style.width = `${Math.max(4, Math.min(100, state.stemVocal * 120))}%`;
+      document.getElementById('stem-bass-bar').style.width = `${Math.max(4, Math.min(100, state.stemBass * 110))}%`;
+      document.getElementById('stem-perc-bar').style.width = `${Math.max(4, Math.min(100, state.stemPerc * 140))}%`;
+    }
+
+    // ============================================================================
+    // 5. 2D PARTICLE SYSTEMS (RAIN, SUNLIT MOTES / EMBERS, SPLASHES)
+    // ============================================================================
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    const raindrops = [];
+    const ripples = [];
+    const splashes = [];
+    const embers = [];
+
+    const MAX_RAIN = 540;
+    const MAX_EMBERS = 140;
+
+    function initParticles() {
+      raindrops.length = 0;
+      for (let i = 0; i < MAX_RAIN; i++) {
+        const layer = Math.random() < 0.3 ? 0 : (Math.random() < 0.65 ? 1 : 2);
+        raindrops.push({
+          x: Math.random() * (width + 400) - 200,
+          y: Math.random() * height,
+          layer,
+          speed: (11 + layer * 5.5) + Math.random() * 4,
+          len: (17 + layer * 13) + Math.random() * 10,
+          alpha: (0.16 + layer * 0.14) + Math.random() * 0.1
+        });
+      }
+
+      embers.length = 0;
+      for (let i = 0; i < MAX_EMBERS; i++) {
+        embers.push(createEmber(true));
+      }
+    }
+
+    function createEmber(randomY = false) {
+      const isOak = state.sceneMode === 'oak';
+      const startX = isOak
+        ? width * (0.22 + Math.random() * 0.56)
+        : width * (0.45 + (Math.random() - 0.5) * 0.35);
+      const startY = randomY
+        ? height * (0.15 + Math.random() * 0.75)
+        : height * (isOak ? (0.3 + Math.random() * 0.55) : (0.65 + Math.random() * 0.25));
+
+      return {
+        x: startX,
+        y: startY,
+        vx: (Math.random() - 0.5) * 0.65,
+        vy: isOak ? -(0.22 + Math.random() * 0.75) : -(0.45 + Math.random() * 1.3),
+        size: 1.3 + Math.random() * 2.8,
+        alpha: 0.35 + Math.random() * 0.65,
+        phase: Math.random() * Math.PI * 2,
+        hue: isOak ? (42 + Math.random() * 32) : (16 + Math.random() * 26)
+      };
+    }
+
+    function spawnSplash(x, y, isAudioPulse = false) {
+      if (ripples.length > 80) ripples.shift();
+      ripples.push({
+        x,
+        y,
+        rx: 1,
+        ry: 0.35,
+        maxRx: (isAudioPulse ? 22 : 10) + Math.random() * 14,
+        alpha: (isAudioPulse ? 0.5 : 0.34) + Math.random() * 0.15
+      });
+
+      if (Math.random() < 0.55 && splashes.length < 85) {
+        for (let k = 0; k < 2; k++) {
+          splashes.push({
+            x,
+            y,
+            vx: (Math.random() - 0.5) * 2.4,
+            vy: -(1.3 + Math.random() * 2.1),
+            life: 1.0
+          });
+        }
+      }
+    }
+
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      initFogCanvas();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    initParticles();
+
+    // ============================================================================
+    // 6. MAIN RENDER LOOP
+    // ============================================================================
+    let time = 0;
+
+    function render() {
+      time += 0.016;
+      updateInstrumentDissection();
+
+      state.mouseX += (state.targetMouseX - state.mouseX) * 0.05;
+      state.mouseY += (state.targetMouseY - state.mouseY) * 0.05;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const isOak = state.sceneMode === 'oak';
+      const activeImg = isOak ? oakImage : twilightImage;
+      const isLoaded = isOak ? oakLoaded : twilightLoaded;
+
+      let artRect = { x: 0, y: 0, w: width, h: height };
+
+      // 1. Draw 2D Background Illustration (with gentle hand-drawn breathing)
+      if (isLoaded) {
+        if (state.fitMode === 'contain' && isOak) {
+          ctx.save();
+          const bgScale = Math.max(width / activeImg.width, height / activeImg.height) * 1.1;
+          const bgW = activeImg.width * bgScale;
+          const bgH = activeImg.height * bgScale;
+          ctx.filter = 'blur(28px) brightness(0.42)';
+          ctx.drawImage(
+            activeImg,
+            (width - bgW) * 0.5 - state.mouseX * 10,
+            (height - bgH) * 0.5 - state.mouseY * 10,
+            bgW,
+            bgH
+          );
+          ctx.restore();
+
+          const scale = Math.min(width / activeImg.width, height / activeImg.height) * 0.96;
+          const drawW = activeImg.width * scale;
+          const drawH = activeImg.height * scale;
+          const offsetX = (width - drawW) * 0.5 + state.mouseX * 12;
+          const offsetY = (height - drawH) * 0.5 + state.mouseY * 8;
+          artRect = { x: offsetX, y: offsetY, w: drawW, h: drawH };
+
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+          ctx.shadowBlur = 40;
+          ctx.drawImage(activeImg, offsetX, offsetY, drawW, drawH);
+          ctx.restore();
+        } else {
+          const scale = Math.max(width / activeImg.width, height / activeImg.height) * 1.03;
+          const drawW = activeImg.width * scale;
+          const drawH = activeImg.height * scale;
+          const offsetX = (width - drawW) * 0.5 + state.mouseX * 14;
+          const offsetY = (height - drawH) * 0.5 + state.mouseY * 10;
+          artRect = { x: offsetX, y: offsetY, w: drawW, h: drawH };
+          ctx.drawImage(activeImg, offsetX, offsetY, drawW, drawH);
+        }
+      }
+
+      // 2. Dynamic Canopy Sunburst (Driven by Vocals + Guitar) or Bonfire Glow (Driven by Kick/Bass)
+      const flicker = Math.sin(time * 4.5) * 0.04 + Math.sin(time * 9.2) * 0.03;
+      const glowPower = Math.min(
+        1.5,
+        state.emberIntensity * 0.8 + state.stemVocal * 0.65 + state.stemBass * 0.55 + flicker
+      );
+
+      if (glowPower > 0.05) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+
+        if (isOak) {
+          const sunX = artRect.x + artRect.w * 0.525;
+          const sunY = artRect.y + artRect.h * 0.335;
+          const sunRadius = Math.max(artRect.w, artRect.h) * (0.34 + glowPower * 0.16);
+
+          const sunGrad = ctx.createRadialGradient(sunX, sunY, 4, sunX, sunY, sunRadius);
+          sunGrad.addColorStop(0, `rgba(255, 252, 210, ${0.46 * glowPower})`);
+          sunGrad.addColorStop(0.32, `rgba(220, 235, 130, ${0.24 * glowPower})`);
+          sunGrad.addColorStop(0.68, `rgba(140, 185, 75, ${0.09 * glowPower})`);
+          sunGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+          ctx.fillStyle = sunGrad;
+          ctx.fillRect(0, 0, width, height);
+
+          // Volumetric Sunbeams ("God rays") reacting to Hozier's vocals & guitar chords
+          ctx.translate(sunX, sunY);
+          const rayCount = 5;
+          for (let r = 0; r < rayCount; r++) {
+            const angle = (0.38 + r * 0.22) + Math.sin(time * 0.4 + r) * 0.03;
+            const rayLen = Math.max(artRect.w, artRect.h) * 0.85;
+            const rayWidth = 35 + r * 18 + state.stemVocal * 45;
+
+            ctx.save();
+            ctx.rotate(angle);
+            const rGrad = ctx.createLinearGradient(0, 0, rayLen, 0);
+            rGrad.addColorStop(0, `rgba(255, 248, 195, ${(0.09 + state.stemVocal * 0.1) * state.emberIntensity})`);
+            rGrad.addColorStop(0.6, `rgba(205, 230, 130, ${0.04 * state.emberIntensity})`);
+            rGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = rGrad;
+            ctx.beginPath();
+            ctx.moveTo(0, -rayWidth * 0.25);
+            ctx.lineTo(rayLen, -rayWidth);
+            ctx.lineTo(rayLen, rayWidth);
+            ctx.lineTo(0, rayWidth * 0.25);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+          }
+        } else {
+          const fireX = artRect.x + artRect.w * 0.604;
+          const fireY = artRect.y + artRect.h * 0.675;
+          const fireRadius = Math.max(width, height) * (0.18 + glowPower * 0.14);
+
+          const fireGrad = ctx.createRadialGradient(fireX, fireY, 4, fireX, fireY, fireRadius);
+          fireGrad.addColorStop(0, `rgba(255, 210, 130, ${0.42 * glowPower})`);
+          fireGrad.addColorStop(0.35, `rgba(255, 120, 40, ${0.26 * glowPower})`);
+          fireGrad.addColorStop(0.7, `rgba(180, 55, 15, ${0.10 * glowPower})`);
+          fireGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+          ctx.fillStyle = fireGrad;
+          ctx.fillRect(0, 0, width, height);
+        }
+        ctx.restore();
+      }
+
+      // 3. Floating Sunlit Forest Motes & Glowing Embers (Driven by Kick/Bass & Guitar)
+      const activeEmberCount = Math.floor(MAX_EMBERS * Math.min(1, state.emberIntensity + state.stemBass * 0.4));
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      for (let i = 0; i < activeEmberCount; i++) {
+        const e = embers[i];
+        const speedBoost = 1 + state.stemBass * 2.4 + state.stemGuitar * 1.1;
+        e.phase += 0.035;
+        e.x += (e.vx + Math.sin(e.phase) * 0.5 - state.windAngleDeg * 0.012) * speedBoost;
+        e.y += e.vy * speedBoost;
+
+        if (e.y < -20 || e.x < -20 || e.x > width + 20) {
+          Object.assign(e, createEmber(false));
+        }
+
+        const flickerAlpha = e.alpha * (0.65 + 0.35 * Math.sin(e.phase * 2.1));
+        const glowRadius = e.size * (3.0 + state.stemBass * 2.8);
+
+        const eGrad = ctx.createRadialGradient(e.x, e.y, 0.2, e.x, e.y, glowRadius);
+        const hue = isOak ? 52 : e.hue;
+        eGrad.addColorStop(0, `hsla(${hue + 10}, 100%, 88%, ${flickerAlpha})`);
+        eGrad.addColorStop(0.45, `hsla(${hue}, 95%, 60%, ${flickerAlpha * 0.6})`);
+        eGrad.addColorStop(1, `hsla(${hue}, 100%, 40%, 0)`);
+
+        ctx.fillStyle = eGrad;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, glowRadius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // 4. 2D Raindrops Outside in the Forest & Bark Splashes
+      const activeRainCount = Math.floor(MAX_RAIN * state.rainDensity);
+      const windRad = (state.windAngleDeg * Math.PI) / 180;
+      const sinWind = Math.sin(windRad);
+      const cosWind = Math.cos(windRad);
+
+      ctx.save();
+      ctx.lineCap = 'round';
+      const sunCenterX = artRect.x + artRect.w * 0.52;
+      const sunCenterY = artRect.y + artRect.h * 0.38;
+
+      for (let i = 0; i < activeRainCount; i++) {
+        const d = raindrops[i];
+        const speedMult = 1 + state.stemPerc * 0.4;
+        d.x += sinWind * d.speed * speedMult;
+        d.y += cosWind * d.speed * speedMult;
+
+        if (isOak) {
+          const relX = (d.x - artRect.x) / artRect.w;
+          const relY = (d.y - artRect.y) / artRect.h;
+          const hitsBranchArch =
+            (relX > 0.24 && relX < 0.57 && Math.abs(relY - (0.42 + Math.pow(relX - 0.42, 2) * 3.5)) < 0.03) ||
+            (relX > 0.12 && relX < 0.44 && Math.abs(relY - 0.72) < 0.025);
+
+          if (hitsBranchArch && d.layer === 2 && Math.random() < 0.14) {
+            spawnSplash(d.x, d.y, false);
+            d.y = -20;
+            d.x = Math.random() * (width + 400) - 200;
+            continue;
+          }
+        }
+
+        if (d.y > height + 30 || d.x < -150 || d.x > width + 150) {
+          d.y = -20 - Math.random() * 40;
+          d.x = Math.random() * (width + 400) - 200;
+        }
+
+        const tailX = d.x - sinWind * d.len;
+        const tailY = d.y - cosWind * d.len;
+        const distToSun = Math.hypot(d.x - sunCenterX, d.y - sunCenterY);
+        const inSunbeam = isOak && distToSun < artRect.w * 0.28;
+
+        ctx.strokeStyle = inSunbeam
+          ? `rgba(255, 248, 190, ${d.alpha * 1.25})`
+          : (isOak ? `rgba(210, 235, 220, ${d.alpha})` : `rgba(185, 215, 255, ${d.alpha})`);
+        ctx.lineWidth = d.layer === 2 ? 1.45 : (d.layer === 1 ? 1.0 : 0.65);
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(d.x, d.y);
+        ctx.stroke();
+      }
+
+      // Bark / Puddle Ripples & Splashes
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const r = ripples[i];
+        r.rx += 0.4 + state.stemPerc * 0.45;
+        r.ry = r.rx * 0.28;
+        r.alpha *= 0.95;
+        if (r.alpha < 0.02 || r.rx > r.maxRx) {
+          ripples.splice(i, 1);
+          continue;
+        }
+        ctx.strokeStyle = `rgba(235, 245, 195, ${r.alpha})`;
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.ellipse(r.x, r.y, r.rx, r.ry, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = 'rgba(240, 250, 210, 0.7)';
+      for (let i = splashes.length - 1; i >= 0; i--) {
+        const s = splashes[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.vy += 0.22;
+        s.life -= 0.08;
+        if (s.life <= 0) {
+          splashes.splice(i, 1);
+          continue;
+        }
+        ctx.globalAlpha = s.life * 0.75;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 1.3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // 5. #4: Tactile Foggy Windowpane & Trickling Glass Beads
+      if (state.windowFogEnabled && state.fogMaxOpacity > 0.01) {
+        // Very slowly re-condense fog on the glass
+        if (Math.random() < 0.12) {
+          fogCtx.save();
+          fogCtx.globalCompositeOperation = 'source-over';
+          fogCtx.fillStyle = 'rgba(185, 204, 194, 0.003)';
+          fogCtx.fillRect(0, 0, fogCanvas.width, fogCanvas.height);
+          fogCtx.restore();
+        }
+
+        // Update trickling water droplets on the glass that carve clear trails through the fog
+        for (const gd of glassDrops) {
+          if (gd.stuckTimer > 0) {
+            gd.stuckTimer -= 1 + state.stemBass * 3;
+          } else {
+            gd.y += gd.vy * (1 + state.rainDensity * 0.8 + state.stemBass * 1.5);
+            gd.x += Math.sin(gd.y * 0.04 + gd.r) * 0.35;
+            if (Math.random() < 0.02) gd.stuckTimer = 20 + Math.random() * 50;
+            // Carve a tiny trail in the window condensation
+            wipeFogAt(gd.x, gd.y, gd.r * 2.2, 0.55);
+          }
+
+          if (gd.y > height + 20) {
+            Object.assign(gd, createGlassDrop(false));
+          }
+        }
+
+        // Draw the condensation layer onto the main canvas
+        ctx.save();
+        ctx.globalAlpha = state.fogMaxOpacity;
+        ctx.drawImage(fogCanvas, 0, 0);
+        ctx.restore();
+
+        // Draw the specular water beads sitting on the windowpane
+        ctx.save();
+        for (const gd of glassDrops) {
+          ctx.fillStyle = 'rgba(235, 248, 240, 0.42)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.ellipse(gd.x, gd.y, gd.r * 0.85, gd.r * 1.15, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // Tiny highlight reflection inside each glass droplet
+          ctx.fillStyle = 'rgba(255, 255, 230, 0.85)';
+          ctx.beginPath();
+          ctx.arc(gd.x - gd.r * 0.25, gd.y - gd.r * 0.3, gd.r * 0.25, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // 6. #5: Interactive 6 Acoustic Guitar Strings Overlay
+      drawGuitarStrings();
+
+      requestAnimationFrame(render);
+    }
+
+    function drawGuitarStrings() {
+      const geom = getGuitarGeometry();
+      const chord = CHORDS[state.activeChordIdx];
+
+      ctx.save();
+      // Subtle wooden/brass bridge caps at top and bottom of strings
+      ctx.fillStyle = 'rgba(20, 26, 20, 0.55)';
+      ctx.strokeStyle = 'rgba(232, 185, 84, 0.35)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(geom.xStart - 16, geom.yTop - 26, geom.panelWidth + 32, 22, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f5df9e';
+      ctx.font = '600 11px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`🎸 ${chord.name} (Keys 1-4)`, geom.xStart + geom.panelWidth * 0.5, geom.yTop - 11);
+
+      for (let i = 0; i < 6; i++) {
+        const s = guitarStrings[i];
+        const baseX = geom.xStart + i * geom.spacing;
+
+        // Damped string physics
+        s.phase += 0.65 + i * 0.08;
+        s.vibration *= 0.92;
+        s.glow *= 0.94;
+
+        const offsetMid = Math.sin(s.phase) * s.vibration;
+
+        // String shadow
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.55)';
+        ctx.lineWidth = 2.6 - i * 0.22;
+        ctx.beginPath();
+        ctx.moveTo(baseX + 2, geom.yTop);
+        ctx.quadraticCurveTo(baseX + offsetMid + 2, (geom.yTop + geom.yBottom) * 0.5, baseX + 2, geom.yBottom);
+        ctx.stroke();
+
+        // Phosphor-bronze acoustic guitar string with warm glow when plucked
+        if (s.glow > 0.05) {
+          ctx.shadowColor = '#ffcf6b';
+          ctx.shadowBlur = 14 * s.glow;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.strokeStyle = s.glow > 0.05
+          ? `rgba(255, 236, 175, ${0.75 + s.glow * 0.25})`
+          : `rgba(218, 182, 112, ${0.48 + i * 0.04})`;
+        ctx.lineWidth = 2.3 - i * 0.22;
+
+        ctx.beginPath();
+        ctx.moveTo(baseX, geom.yTop);
+        ctx.quadraticCurveTo(baseX + offsetMid, (geom.yTop + geom.yBottom) * 0.5, baseX, geom.yBottom);
+        ctx.stroke();
+
+        // Key label badge at bottom of each string
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = s.glow > 0.1 ? 'rgba(232, 185, 84, 0.85)' : 'rgba(15, 22, 18, 0.65)';
+        ctx.beginPath();
+        ctx.arc(baseX, geom.yBottom + 14, 9, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = s.glow > 0.1 ? '#111' : '#d8d2c5';
+        ctx.font = 'bold 10px -apple-system, sans-serif';
+        ctx.fillText(chord.keys[i], baseX, geom.yBottom + 17.5);
+      }
+
+      ctx.restore();
+    }
+
+    requestAnimationFrame(render);
+
+    // ============================================================================
+    // 7. MOUSE WIPE, GUITAR STRUMMING & KEYBOARD CONTROLS
+    // ============================================================================
+    window.addEventListener('mousemove', (e) => {
+      state.targetMouseX = (e.clientX / width - 0.5) * 2;
+      state.targetMouseY = (e.clientY / height - 0.5) * 2;
+
+      // 1. Wipe window condensation where the mouse moves!
+      wipeFogAt(e.clientX, e.clientY, 52, 0.65);
+
+      // 2. Check if mouse crossed any of the 6 guitar strings to strum them!
+      if (state.lastMousePxX !== null) {
+        const geom = getGuitarGeometry();
+        if (e.clientY >= geom.yTop && e.clientY <= geom.yBottom) {
+          for (let i = 0; i < 6; i++) {
+            const sx = geom.xStart + i * geom.spacing;
+            const crossedRight = state.lastMousePxX < sx && e.clientX >= sx;
+            const crossedLeft = state.lastMousePxX > sx && e.clientX <= sx;
+            if (crossedRight || crossedLeft) {
+              const speed = Math.min(0.35, Math.max(0.12, Math.abs(e.clientX - state.lastMousePxX) * 0.01));
+              pluckGuitarString(i, speed, true);
+            }
+          }
+        }
+      }
+
+      state.lastMousePxX = e.clientX;
+      state.lastMousePxY = e.clientY;
+    });
+
+    canvas.addEventListener('click', (e) => {
+      // Check if clicked near a guitar string
+      const geom = getGuitarGeometry();
+      if (e.clientY >= geom.yTop && e.clientY <= geom.yBottom) {
+        for (let i = 0; i < 6; i++) {
+          const sx = geom.xStart + i * geom.spacing;
+          if (Math.abs(e.clientX - sx) < 16) {
+            pluckGuitarString(i, 0.25, true);
+            return;
+          }
+        }
+      }
+
+      wipeFogAt(e.clientX, e.clientY, 75, 0.95);
+      spawnSplash(e.clientX, e.clientY, true);
+    });
+
+    // Keyboard Playable Guitar (A S D F G H = strings 1..6, Space = full chord strum, 1..4 = chords)
+    const keyMap = { 'a': 0, 's': 1, 'd': 2, 'f': 3, 'g': 4, 'h': 5 };
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      const k = e.key.toLowerCase();
+
+      if (k in keyMap) {
+        pluckGuitarString(keyMap[k], 0.24, true);
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        strumFullChord();
+      } else if (['1', '2', '3', '4'].includes(k)) {
+        setChord(Number(k) - 1);
+        strumFullChord();
+      } else if (k === 'z') {
+        toggleZenMode();
+      }
+    });
+
+    // Buttons & Sliders
+    document.getElementById('start-experience-btn').addEventListener('click', () => {
+      setAmbiencePlaying(true);
+      strumFullChord();
+      document.getElementById('start-banner').classList.add('hidden');
+    });
+
+    document.getElementById('rain-audio-btn').addEventListener('click', () => {
+      setAmbiencePlaying(!state.ambiencePlaying);
+      document.getElementById('start-banner').classList.add('hidden');
+    });
+
+    document.getElementById('demo-music-btn').addEventListener('click', () => {
+      if (!state.ambiencePlaying) setAmbiencePlaying(true);
+      toggleDemoMusic();
+      document.getElementById('start-banner').classList.add('hidden');
+    });
+
+    document.getElementById('window-fog-btn').addEventListener('click', (e) => {
+      state.windowFogEnabled = !state.windowFogEnabled;
+      e.currentTarget.textContent = state.windowFogEnabled ? '🪟 Foggy Window: ON' : '🪟 Foggy Window: OFF';
+      e.currentTarget.classList.toggle('active-toggle', state.windowFogEnabled);
+    });
+
+    document.getElementById('refog-btn').addEventListener('click', () => {
+      state.windowFogEnabled = true;
+      document.getElementById('window-fog-btn').textContent = '🪟 Foggy Window: ON';
+      document.getElementById('window-fog-btn').classList.add('active-toggle');
+      fillWindowCondensation(0.9);
+    });
+
+    document.getElementById('scene-switch-btn').addEventListener('click', (e) => {
+      state.sceneMode = state.sceneMode === 'oak' ? 'twilight' : 'oak';
+      e.currentTarget.textContent = state.sceneMode === 'oak'
+        ? '🌳 Art: 2D Gnarled Oak'
+        : '🔥 Art: Twilight Bonfire';
+      initParticles();
+    });
+
+    document.getElementById('fit-mode-btn').addEventListener('click', (e) => {
+      state.fitMode = state.fitMode === 'contain' ? 'cover' : 'contain';
+      e.currentTarget.textContent = state.fitMode === 'contain'
+        ? '📐 Fit: Full Drawing'
+        : '📐 Fit: Fill Screen';
+    });
+
+    document.getElementById('rain-density').addEventListener('input', (e) => {
+      state.rainDensity = Number(e.target.value) / 100;
+      document.getElementById('rain-density-val').textContent = `${e.target.value}%`;
+      if (rainPinkGain && audioCtx) {
+        rainPinkGain.gain.setTargetAtTime(0.75 * state.rainDensity, audioCtx.currentTime, 0.1);
+        rainPatterGain.gain.setTargetAtTime(0.55 * state.rainDensity, audioCtx.currentTime, 0.1);
+      }
+    });
+
+    document.getElementById('ember-intensity').addEventListener('input', (e) => {
+      state.emberIntensity = Number(e.target.value) / 100;
+      document.getElementById('ember-intensity-val').textContent = `${e.target.value}%`;
+      if (fireCrackleGain && audioCtx) {
+        fireCrackleGain.gain.setTargetAtTime(0.35 * state.emberIntensity, audioCtx.currentTime, 0.1);
+      }
+    });
+
+    document.getElementById('fog-opacity').addEventListener('input', (e) => {
+      state.fogMaxOpacity = Number(e.target.value) / 100;
+      document.getElementById('fog-opacity-val').textContent = `${e.target.value}%`;
+    });
+
+    document.getElementById('ambience-vol').addEventListener('input', (e) => {
+      state.ambienceVolume = Number(e.target.value) / 100;
+      document.getElementById('ambience-vol-val').textContent = `${e.target.value}%`;
+      if (masterAmbienceGain && state.ambiencePlaying && audioCtx) {
+        masterAmbienceGain.gain.setTargetAtTime(state.ambienceVolume, audioCtx.currentTime, 0.1);
+      }
+    });
+
+    document.getElementById('music-vol').addEventListener('input', (e) => {
+      state.musicVolume = Number(e.target.value) / 100;
+      document.getElementById('music-vol-val').textContent = `${e.target.value}%`;
+      if (songGainNode && audioCtx) {
+        songGainNode.gain.setTargetAtTime(state.musicVolume, audioCtx.currentTime, 0.08);
+      }
+    });
+
+    // Song File Upload & Drag-and-Drop
+    const audioEl = document.getElementById('song-audio');
+    const playPauseBtn = document.getElementById('play-pause-song-btn');
+    const seekSlider = document.getElementById('song-seek');
+    const timeLabel = document.getElementById('song-time-label');
+    const trackNameLabel = document.getElementById('track-name-label');
+    const trackStatusLabel = document.getElementById('track-status-label');
+
+    function formatTime(sec) {
+      if (!isFinite(sec)) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function loadSongFile(file) {
+      if (!file) return;
+      initAudioEngine();
+      if (state.demoPlaying) toggleDemoMusic(false);
+      if (!state.ambiencePlaying) setAmbiencePlaying(true);
+      document.getElementById('start-banner').classList.add('hidden');
+
+      const url = URL.createObjectURL(file);
+      audioEl.src = url;
+      audioEl.load();
+
+      trackNameLabel.textContent = file.name.replace(/\.[^/.]+$/, '');
+      trackStatusLabel.textContent = '4-Stem Dissection Active';
+      playPauseBtn.disabled = false;
+      seekSlider.disabled = false;
+
+      audioEl.play().then(() => {
+        state.songPlaying = true;
+        playPauseBtn.textContent = '⏸';
+      }).catch(() => {
+        playPauseBtn.textContent = '▶';
+      });
+    }
+
+    document.getElementById('song-upload').addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        loadSongFile(e.target.files[0]);
+      }
+    });
+
+    playPauseBtn.addEventListener('click', () => {
+      initAudioEngine();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (audioEl.paused) {
+        if (state.demoPlaying) toggleDemoMusic(false);
+        audioEl.play();
+        state.songPlaying = true;
+        playPauseBtn.textContent = '⏸';
+      } else {
+        audioEl.pause();
+        state.songPlaying = false;
+        playPauseBtn.textContent = '▶';
+      }
+    });
+
+    audioEl.addEventListener('timeupdate', () => {
+      if (audioEl.duration) {
+        seekSlider.value = (audioEl.currentTime / audioEl.duration) * 100;
+        timeLabel.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration)}`;
+      }
+    });
+
+    audioEl.addEventListener('ended', () => {
+      state.songPlaying = false;
+      playPauseBtn.textContent = '▶';
+    });
+
+    seekSlider.addEventListener('input', (e) => {
+      if (audioEl.duration) {
+        audioEl.currentTime = (Number(e.target.value) / 100) * audioEl.duration;
+      }
+    });
+
+    const dropOverlay = document.getElementById('drop-overlay');
+    window.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropOverlay.classList.add('active');
+    });
+    window.addEventListener('dragleave', (e) => {
+      if (e.target === dropOverlay || e.clientX <= 0 || e.clientY <= 0) {
+        dropOverlay.classList.remove('active');
+      }
+    });
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropOverlay.classList.remove('active');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        loadSongFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    function toggleZenMode() {
+      state.uiHidden = !state.uiHidden;
+      document.getElementById('controls-dock').classList.toggle('hidden', state.uiHidden);
+      document.getElementById('human-hint').style.opacity = state.uiHidden ? '0' : '1';
+      document.getElementById('zen-btn').textContent = state.uiHidden ? 'Show UI' : 'Hide UI (Z)';
+    }
+
+    document.getElementById('zen-btn').addEventListener('click', toggleZenMode);
+  </script>
+</body>
+</html>
