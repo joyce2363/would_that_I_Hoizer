@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Would That I — Interactive 2D Forest, Window & Guitar Visualizer</title>
+  <title>Would That I — Garfield Train Dance & 2D Forest Visualizer</title>
   <style>
     :root {
-      --bg-dark: #090e0a;
-      --panel-bg: rgba(12, 19, 15, 0.82);
-      --panel-border: rgba(215, 188, 105, 0.28);
-      --amber: #e8b954;
+      --bg-dark: #0e0a08;
+      --panel-bg: rgba(18, 14, 12, 0.84);
+      --panel-border: rgba(235, 168, 84, 0.32);
+      --amber: #f29d38;
       --rain-blue: #9ed4b8;
-      --text-main: #f3efe6;
-      --text-dim: #aab8ad;
+      --text-main: #f5efe6;
+      --text-dim: #bbaea2;
     }
 
     * {
@@ -37,14 +37,18 @@
       width: 100vw;
       height: 100vh;
       display: block;
-      cursor: crosshair;
+      cursor: grab;
+    }
+
+    #scene-canvas:active {
+      cursor: grabbing;
     }
 
     /* Drag & Drop Overlay */
     #drop-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(10, 18, 13, 0.86);
+      background: rgba(18, 12, 9, 0.86);
       backdrop-filter: blur(8px);
       display: flex;
       flex-direction: column;
@@ -80,7 +84,7 @@
     /* Start Banner */
     #start-banner {
       position: fixed;
-      top: 18px;
+      top: 16px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 25;
@@ -92,7 +96,7 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(215, 185, 90, 0.15);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(242, 157, 56, 0.2);
       transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
@@ -106,7 +110,7 @@
       font-size: 1rem;
       font-weight: normal;
       letter-spacing: 0.04em;
-      color: #f7e6b7;
+      color: #ffdca8;
     }
 
     .title-group span {
@@ -118,37 +122,38 @@
     /* Interactive Hint Pill */
     #human-hint {
       position: fixed;
-      top: 76px;
+      top: 72px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 15;
-      background: rgba(12, 19, 15, 0.55);
-      border: 1px solid rgba(232, 185, 84, 0.22);
-      padding: 5px 14px;
+      background: rgba(18, 13, 10, 0.68);
+      border: 1px solid rgba(242, 157, 56, 0.28);
+      padding: 5px 15px;
       border-radius: 999px;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 0.75rem;
-      color: #e4decb;
+      color: #efe4d4;
       pointer-events: none;
       text-align: center;
       backdrop-filter: blur(6px);
       transition: opacity 0.5s ease;
+      white-space: nowrap;
     }
 
     /* Main Control Dock */
     #controls-dock {
       position: fixed;
-      bottom: 18px;
+      bottom: 16px;
       left: 50%;
       transform: translateX(-50%);
-      width: min(1020px, 96vw);
+      width: min(1060px, 96vw);
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
       backdrop-filter: blur(16px);
       border-radius: 18px;
-      padding: 14px 18px;
+      padding: 13px 18px;
       z-index: 20;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.78), 0 0 35px rgba(190, 165, 75, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.78), 0 0 35px rgba(242, 157, 56, 0.12);
       transition: opacity 0.4s ease, transform 0.4s ease;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
@@ -164,17 +169,17 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      padding-bottom: 11px;
+      gap: 9px;
+      padding-bottom: 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-      margin-bottom: 11px;
+      margin-bottom: 10px;
     }
 
     .btn-row {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
     }
 
     button, .file-label {
@@ -183,7 +188,7 @@
       border: 1px solid rgba(255, 255, 255, 0.16);
       padding: 7px 11px;
       border-radius: 9px;
-      font-size: 0.78rem;
+      font-size: 0.77rem;
       font-weight: 500;
       cursor: pointer;
       display: inline-flex;
@@ -193,16 +198,16 @@
     }
 
     button:hover, .file-label:hover {
-      background: rgba(232, 185, 84, 0.18);
+      background: rgba(242, 157, 56, 0.2);
       border-color: var(--amber);
       transform: translateY(-1px);
     }
 
     button.primary {
-      background: linear-gradient(135deg, #b88a28, #6e5211);
-      border-color: #f3cf7a;
+      background: linear-gradient(135deg, #df7a26, #96410b);
+      border-color: #ffc87a;
       color: #fff;
-      box-shadow: 0 4px 16px rgba(184, 138, 40, 0.4);
+      box-shadow: 0 4px 16px rgba(223, 122, 38, 0.4);
     }
 
     button.active-toggle {
@@ -212,9 +217,9 @@
     }
 
     button.ember-toggle.active-toggle {
-      background: rgba(232, 185, 84, 0.24);
+      background: rgba(242, 157, 56, 0.26);
       border-color: var(--amber);
-      color: #fff0c4;
+      color: #ffebc4;
     }
 
     input[type="file"] {
@@ -227,7 +232,7 @@
       align-items: center;
       gap: 9px;
       flex: 1;
-      min-width: 240px;
+      min-width: 230px;
       background: rgba(0, 0, 0, 0.35);
       padding: 6px 11px;
       border-radius: 9px;
@@ -237,21 +242,21 @@
     .track-info {
       display: flex;
       flex-direction: column;
-      min-width: 115px;
-      max-width: 175px;
+      min-width: 110px;
+      max-width: 170px;
     }
 
     .track-name {
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: #f5df9e;
+      color: #ffd59e;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .track-status {
-      font-size: 0.67rem;
+      font-size: 0.66rem;
       color: var(--text-dim);
     }
 
@@ -272,8 +277,8 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-      padding-bottom: 11px;
-      margin-bottom: 11px;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
@@ -290,7 +295,7 @@
     .stem-header {
       display: flex;
       justify-content: space-between;
-      font-size: 0.71rem;
+      font-size: 0.7rem;
       color: var(--text-dim);
     }
 
@@ -330,7 +335,7 @@
     .control-header {
       display: flex;
       justify-content: space-between;
-      font-size: 0.73rem;
+      font-size: 0.72rem;
       color: var(--text-dim);
     }
 
@@ -354,10 +359,10 @@
     /* Floating Zen Button */
     #zen-btn {
       position: fixed;
-      top: 18px;
+      top: 16px;
       right: 18px;
       z-index: 30;
-      background: rgba(12, 19, 15, 0.65);
+      background: rgba(18, 14, 12, 0.68);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--text-dim);
@@ -379,34 +384,34 @@
 
   <div id="drop-overlay">
     <h2>Drop "Would That I" Audio File Here</h2>
-    <p>Dissects Guitar, Vocals, Kick/Bass & Percussion in real time</p>
+    <p>Garfield will dance to the dissected Guitar, Vocals, Kick/Bass &amp; Percussion!</p>
   </div>
 
   <div id="start-banner">
     <div class="title-group">
-      <h1>Would That I — Foggy Window & Interactive Guitar</h1>
-      <span>Wipe the foggy window with your mouse • Strum the strings or press A S D F G H / Space</span>
+      <h1>Garfield Train Dance &amp; "Would That I" Visualizer</h1>
+      <span>Drag Garfield anywhere • Switch dance styles • Strum the guitar strings or drop an MP3!</span>
     </div>
-    <button id="start-experience-btn" class="primary">▶ Start Rain & Forest Ambience</button>
+    <button id="start-experience-btn" class="primary">▶ Start Music &amp; Dance</button>
   </div>
 
   <div id="human-hint">
-    ✋ <b>Wipe window condensation</b> with your mouse • 🎸 <b>Strum the 6 guitar strings</b> on the right (or keys <b>A S D F G H</b> &amp; <b>1-4</b> to switch chords: <span id="active-chord-name" style="color:#f5df9e;font-weight:bold;">G Major</span>)
+    🐱 <b>Drag Garfield</b> anywhere on the train • 🕺 Press <b>M</b> to cycle Dance Moves (<span id="dance-move-label" style="color:#ffd59e;font-weight:bold;">Groove &amp; Wave</span>) • 🎸 Strum strings or press <b>A S D F G H</b> / <b>Space</b>
   </div>
 
-  <button id="zen-btn" title="Toggle Controls (Shortcut: H)">Hide UI (H)</button>
+  <button id="zen-btn" title="Toggle Controls (Shortcut: Z)">Hide UI (Z)</button>
 
   <div id="controls-dock">
     <div class="dock-top">
       <div class="btn-row">
+        <button id="garfield-toggle-btn" class="ember-toggle active-toggle">🐱 Garfield: ON</button>
+        <button id="dance-style-btn" class="ember-toggle active-toggle">🕺 Move: Groove &amp; Wave</button>
+        <button id="scene-switch-btn" class="ember-toggle active-toggle">🚋 Scene: Sunset Train</button>
+        <button id="demo-music-btn" class="ember-toggle">🎸 Acoustic Beat: OFF</button>
         <button id="rain-audio-btn">🌧️ Rain: OFF</button>
-        <button id="demo-music-btn" class="ember-toggle" title="Plays a built-in acoustic woodland chord progression">🎸 Auto-Fingerpick: OFF</button>
-        <button id="window-fog-btn" class="active-toggle" title="Toggle cozy rain-streaked foggy cabin window that you can wipe by hand">🪟 Foggy Window: ON</button>
-        <button id="refog-btn" title="Breathe warm condensation back onto the window glass">💨 Breathe Fog</button>
-        <button id="scene-switch-btn" class="ember-toggle active-toggle">🌳 Art: 2D Gnarled Oak</button>
-        <button id="fit-mode-btn">📐 Fit: Full Drawing</button>
+        <button id="window-fog-btn" title="Toggle foggy window that you can wipe by hand">🪟 Window Fog: OFF</button>
         <label class="file-label" for="song-upload">
-          🎵 Load Song (MP3/WAV)
+          🎵 Load Song (MP3)
         </label>
         <input type="file" id="song-upload" accept="audio/*" />
       </div>
@@ -415,7 +420,7 @@
         <button id="play-pause-song-btn" disabled style="padding: 5px 9px;">▶</button>
         <div class="track-info">
           <span class="track-name" id="track-name-label">No song loaded yet</span>
-          <span class="track-status" id="track-status-label">Drop MP3 or play guitar strings!</span>
+          <span class="track-status" id="track-status-label">Drop MP3 or click Acoustic Beat!</span>
         </div>
         <input type="range" id="song-seek" class="seek-slider" min="0" max="100" value="0" step="0.1" disabled />
         <span class="time-label" id="song-time-label">0:00 / 0:00</span>
@@ -427,7 +432,7 @@
       <div class="stem-card">
         <div class="stem-header">
           <strong>🎸 Acoustic Guitar</strong>
-          <span id="stem-guitar-val">Pluck / Mid</span>
+          <span id="stem-guitar-val">Body Groove</span>
         </div>
         <div class="stem-bar-bg">
           <div class="stem-bar-fill" id="stem-guitar-bar" style="background: linear-gradient(90deg, #e8b954, #fff0a8);"></div>
@@ -437,7 +442,7 @@
       <div class="stem-card">
         <div class="stem-header">
           <strong>🎤 Vocals &amp; Choir</strong>
-          <span id="stem-vocal-val">Warmth / Sun</span>
+          <span id="stem-vocal-val">Sunbeam Glow</span>
         </div>
         <div class="stem-bar-bg">
           <div class="stem-bar-fill" id="stem-vocal-bar" style="background: linear-gradient(90deg, #a2d98c, #e2ffc4);"></div>
@@ -447,7 +452,7 @@
       <div class="stem-card">
         <div class="stem-header">
           <strong>🥁 Kick Stomp &amp; Bass</strong>
-          <span id="stem-bass-val">Ember Blaze</span>
+          <span id="stem-bass-val">Garfield Bounce</span>
         </div>
         <div class="stem-bar-bg">
           <div class="stem-bar-fill" id="stem-bass-bar" style="background: linear-gradient(90deg, #ff7038, #ffbe6b);"></div>
@@ -457,7 +462,7 @@
       <div class="stem-card">
         <div class="stem-header">
           <strong>👏 Claps &amp; Shakers</strong>
-          <span id="stem-perc-val">Rain Shimmer</span>
+          <span id="stem-perc-val">Foot Tap / Rain</span>
         </div>
         <div class="stem-bar-bg">
           <div class="stem-bar-fill" id="stem-perc-bar" style="background: linear-gradient(90deg, #7ec8ff, #d4f0ff);"></div>
@@ -468,34 +473,34 @@
     <div class="sliders-grid">
       <div class="control-group">
         <div class="control-header">
-          <span>Rain Intensity</span>
-          <span class="val" id="rain-density-val">75%</span>
+          <span>Dance Energy &amp; Speed</span>
+          <span class="val" id="dance-energy-val">80%</span>
         </div>
-        <input type="range" id="rain-density" class="rain-range" min="10" max="100" value="75" />
+        <input type="range" id="dance-energy" min="10" max="150" value="80" />
       </div>
 
       <div class="control-group">
         <div class="control-header">
-          <span>Sunbeam &amp; Ember Glow</span>
+          <span>Garfield Size</span>
+          <span class="val" id="garf-size-val">100%</span>
+        </div>
+        <input type="range" id="garf-size" min="40" max="180" value="100" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <span>Rain Intensity</span>
+          <span class="val" id="rain-density-val">35%</span>
+        </div>
+        <input type="range" id="rain-density" class="rain-range" min="0" max="100" value="35" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <span>Sunlight &amp; Embers</span>
           <span class="val" id="ember-intensity-val">75%</span>
         </div>
         <input type="range" id="ember-intensity" min="10" max="100" value="75" />
-      </div>
-
-      <div class="control-group">
-        <div class="control-header">
-          <span>Window Condensation</span>
-          <span class="val" id="fog-opacity-val">65%</span>
-        </div>
-        <input type="range" id="fog-opacity" class="rain-range" min="0" max="100" value="65" />
-      </div>
-
-      <div class="control-group">
-        <div class="control-header">
-          <span>Rain Ambience Vol</span>
-          <span class="val" id="ambience-vol-val">65%</span>
-        </div>
-        <input type="range" id="ambience-vol" class="rain-range" min="0" max="100" value="65" />
       </div>
 
       <div class="control-group">
@@ -517,6 +522,11 @@
     const canvas = document.getElementById('scene-canvas');
     const ctx = canvas.getContext('2d');
 
+    const trainImage = new Image();
+    trainImage.src = 'train_bg.jpg';
+    let trainLoaded = false;
+    trainImage.onload = () => { trainLoaded = true; };
+
     const oakImage = new Image();
     oakImage.src = 'oak_canopy_2d.jpg';
     let oakLoaded = false;
@@ -527,28 +537,54 @@
     let twilightLoaded = false;
     twilightImage.onload = () => { twilightLoaded = true; };
 
+    const garfieldImage = new Image();
+    garfieldImage.src = 'garfield.png';
+    let garfieldLoaded = false;
+    garfieldImage.onload = () => { garfieldLoaded = true; };
+
+    const SCENES = [
+      { id: 'train', label: '🚋 Scene: Sunset Train' },
+      { id: 'oak', label: '🌳 Scene: 2D Gnarled Oak' },
+      { id: 'twilight', label: '🔥 Scene: Twilight Woods' }
+    ];
+
+    const DANCE_MOVES = [
+      { id: 'groove', name: 'Groove & Wave' },
+      { id: 'breakdance', name: 'Breakdance Spin' },
+      { id: 'aisle_strut', name: 'Aisle Moonwalk' },
+      { id: 'bench_lounge', name: 'Velvet Seat Bop' },
+      { id: 'rave', name: 'Lasagna Disco Rave' }
+    ];
+
     const state = {
-      sceneMode: 'oak',        // 'oak' or 'twilight'
-      fitMode: 'contain',      // 'contain' or 'cover'
-      windowFogEnabled: true,
-      fogMaxOpacity: 0.65,
-      rainDensity: 0.75,
+      sceneIdx: 0,             // Starts on Sunset Train!
+      showGarfield: true,
+      danceMoveIdx: 0,
+      danceEnergy: 0.80,
+      garfieldScale: 1.0,
+      garfX: 0.48,             // Normalized X position (center of train aisle)
+      garfY: 0.83,             // Normalized Y floor position
+      draggingGarfield: false,
+      dragOffsetX: 0,
+      dragOffsetY: 0,
+      windowFogEnabled: false,
+      fogMaxOpacity: 0.60,
+      rainDensity: 0.35,
       emberIntensity: 0.75,
       windAngleDeg: -9,
-      ambienceVolume: 0.65,
+      ambienceVolume: 0.55,
       musicVolume: 0.85,
-      lightningFlash: 0,
       mouseX: 0,
       mouseY: 0,
       targetMouseX: 0,
       targetMouseY: 0,
       lastMousePxX: null,
       lastMousePxY: null,
-      // Dissected Instrument Envelopes (0.0 to 1.0)
-      stemBass: 0,             // 40-150Hz: Kick stomp & bass
-      stemGuitar: 0,           // 180-1100Hz transient plucks
-      stemVocal: 0,            // 300-2800Hz sustained warmth
-      stemPerc: 0,             // 3000-12000Hz claps, shakers, cymbals
+      // Dissected Instrument Envelopes
+      stemBass: 0,
+      stemGuitar: 0,
+      stemVocal: 0,
+      stemPerc: 0,
       prevGuitarRaw: 0,
       ambiencePlaying: false,
       demoPlaying: false,
@@ -557,8 +593,26 @@
       activeChordIdx: 0
     };
 
+    // Musical notes floating off Garfield as he dances
+    const musicNotes = [];
+    const noteSymbols = ['♪', '♫', '♬', '✨'];
+
+    function spawnMusicNote(x, y) {
+      if (musicNotes.length > 25) musicNotes.shift();
+      musicNotes.push({
+        x: x + (Math.random() - 0.5) * 90,
+        y: y - 40 - Math.random() * 40,
+        vx: (Math.random() - 0.5) * 1.4,
+        vy: -(1.2 + Math.random() * 1.5),
+        symbol: noteSymbols[Math.floor(Math.random() * noteSymbols.length)],
+        size: 16 + Math.random() * 12,
+        life: 1.0,
+        hue: 28 + Math.random() * 35
+      });
+    }
+
     // ============================================================================
-    // 2. #4: TACTILE FOGGY WINDOWPANE & CONDENSATION DROPLETS
+    // 2. #4: TACTILE FOGGY WINDOWPANE
     // ============================================================================
     const fogCanvas = document.createElement('canvas');
     const fogCtx = fogCanvas.getContext('2d');
@@ -568,24 +622,14 @@
       fogCanvas.width = window.innerWidth;
       fogCanvas.height = window.innerHeight;
       fillWindowCondensation(0.85);
-
       glassDrops.length = 0;
-      for (let i = 0; i < 28; i++) {
-        glassDrops.push(createGlassDrop(true));
-      }
+      for (let i = 0; i < 24; i++) glassDrops.push(createGlassDrop(true));
     }
 
     function fillWindowCondensation(amount = 0.85) {
       fogCtx.save();
       fogCtx.globalCompositeOperation = 'source-over';
-      const grad = fogCtx.createRadialGradient(
-        fogCanvas.width * 0.5, fogCanvas.height * 0.5, fogCanvas.width * 0.1,
-        fogCanvas.width * 0.5, fogCanvas.height * 0.5, fogCanvas.width * 0.75
-      );
-      grad.addColorStop(0, `rgba(195, 212, 202, ${amount * 0.72})`);
-      grad.addColorStop(0.6, `rgba(175, 196, 185, ${amount * 0.88})`);
-      grad.addColorStop(1, `rgba(150, 175, 165, ${amount * 0.96})`);
-      fogCtx.fillStyle = grad;
+      fogCtx.fillStyle = `rgba(185, 200, 195, ${amount * 0.85})`;
       fogCtx.fillRect(0, 0, fogCanvas.width, fogCanvas.height);
       fogCtx.restore();
     }
@@ -619,45 +663,23 @@
     // 3. #5: INTERACTIVE 6-STRING ACOUSTIC GUITAR ("WOULD THAT I" CHORDS)
     // ============================================================================
     const CHORDS = [
-      {
-        name: 'G Major (Warm Open)',
-        notes: [98.00, 123.47, 146.83, 196.00, 293.66, 392.00], // G2 B2 D3 G3 D4 G4
-        keys: ['A', 'S', 'D', 'F', 'G', 'H']
-      },
-      {
-        name: 'E Minor 7 (Woodland Shelter)',
-        notes: [82.41, 123.47, 146.83, 196.00, 293.66, 329.63], // E2 B2 D3 G3 D4 E4
-        keys: ['A', 'S', 'D', 'F', 'G', 'H']
-      },
-      {
-        name: 'C Add9 (Canopy Sunlight)',
-        notes: [130.81, 164.81, 196.00, 293.66, 329.63, 392.00], // C3 E3 G3 D4 E4 G4
-        keys: ['A', 'S', 'D', 'F', 'G', 'H']
-      },
-      {
-        name: 'D Major (Roaring Blaze)',
-        notes: [146.83, 220.00, 293.66, 369.99, 440.00, 587.33], // D3 A3 D4 F#4 A4 D5
-        keys: ['A', 'S', 'D', 'F', 'G', 'H']
-      }
+      { name: 'G Major', notes: [98.00, 123.47, 146.83, 196.00, 293.66, 392.00], keys: ['A', 'S', 'D', 'F', 'G', 'H'] },
+      { name: 'E Minor 7', notes: [82.41, 123.47, 146.83, 196.00, 293.66, 329.63], keys: ['A', 'S', 'D', 'F', 'G', 'H'] },
+      { name: 'C Add9', notes: [130.81, 164.81, 196.00, 293.66, 329.63, 392.00], keys: ['A', 'S', 'D', 'F', 'G', 'H'] },
+      { name: 'D Major', notes: [146.83, 220.00, 293.66, 369.99, 440.00, 587.33], keys: ['A', 'S', 'D', 'F', 'G', 'H'] }
     ];
 
     const guitarStrings = [];
     for (let i = 0; i < 6; i++) {
-      guitarStrings.push({
-        index: i,
-        vibration: 0,
-        phase: 0,
-        glow: 0
-      });
+      guitarStrings.push({ index: i, vibration: 0, phase: 0, glow: 0 });
     }
 
     function getGuitarGeometry() {
-      // Positioned cleanly along the right side of the window so you can strum across them
-      const panelWidth = Math.min(210, width * 0.19);
-      const rightMargin = 28;
+      const panelWidth = Math.min(190, width * 0.17);
+      const rightMargin = 24;
       const xStart = width - panelWidth - rightMargin;
       const yTop = height * 0.16;
-      const yBottom = height * 0.76;
+      const yBottom = height * 0.74;
       const spacing = panelWidth / 5;
       return { xStart, yTop, yBottom, spacing, panelWidth };
     }
@@ -672,7 +694,6 @@
       s.vibration = Math.min(18, 9 + velocity * 30);
       s.glow = 1.0;
 
-      // Synthesize rich acoustic guitar string pluck
       const now = audioCtx.currentTime;
       const osc1 = audioCtx.createOscillator();
       const osc2 = audioCtx.createOscillator();
@@ -683,10 +704,9 @@
       osc3.type = 'sine';
 
       osc1.frequency.setValueAtTime(freq, now);
-      osc2.frequency.setValueAtTime(freq * 1.0015, now); // warm chorus detune
-      osc3.frequency.setValueAtTime(freq * 2, now);      // octave overtone
+      osc2.frequency.setValueAtTime(freq * 1.0015, now);
+      osc3.frequency.setValueAtTime(freq * 2, now);
 
-      // Acoustic body lowpass envelope
       const filter = audioCtx.createBiquadFilter();
       filter.type = 'lowpass';
       filter.frequency.setValueAtTime(freq * 6.5, now);
@@ -712,34 +732,34 @@
       osc2.stop(now + 2.65);
       osc3.stop(now + 2.65);
 
-      if (spawnVisuals) {
-        const geom = getGuitarGeometry();
-        const sx = geom.xStart + stringIdx * geom.spacing;
-        const sy = (geom.yTop + geom.yBottom) * 0.5 + (Math.random() - 0.5) * 120;
-        for (let k = 0; k < 4; k++) {
-          embers.push({
-            x: sx,
-            y: sy,
-            vx: -(1.0 + Math.random() * 2.2),
-            vy: -(0.6 + Math.random() * 1.6),
-            size: 2.0 + Math.random() * 2.4,
-            alpha: 0.95,
-            phase: Math.random() * Math.PI * 2,
-            hue: 46 + stringIdx * 4
-          });
-        }
+      if (spawnVisuals && state.showGarfield) {
+        spawnMusicNote(width * state.garfX, height * state.garfY - 70);
       }
     }
 
     function strumFullChord() {
       for (let i = 0; i < 6; i++) {
-        setTimeout(() => pluckGuitarString(i, 0.22, true), i * 48);
+        setTimeout(() => pluckGuitarString(i, 0.22, i % 2 === 0), i * 45);
       }
     }
 
-    function setChord(idx) {
-      state.activeChordIdx = idx % CHORDS.length;
-      document.getElementById('active-chord-name').textContent = CHORDS[state.activeChordIdx].name;
+    // Play a warm kick stomp for the groove demo so Garfield bounces hard to the beat!
+    function triggerKickStomp() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(125, now);
+      osc.frequency.exponentialRampToValueAtTime(42, now + 0.14);
+
+      gain.gain.setValueAtTime(0.42 * state.musicVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+
+      osc.connect(gain);
+      gain.connect(analyser);
+      osc.start(now);
+      osc.stop(now + 0.34);
     }
 
     // ============================================================================
@@ -762,15 +782,14 @@
       audioCtx = new AudioContextClass();
 
       analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 1024; // Higher resolution for accurate instrument frequency dissection
-      analyser.smoothingTimeConstant = 0.78;
+      analyser.fftSize = 1024;
+      analyser.smoothingTimeConstant = 0.75;
       freqData = new Uint8Array(analyser.frequencyBinCount);
 
       masterAmbienceGain = audioCtx.createGain();
       masterAmbienceGain.gain.value = 0.001;
       masterAmbienceGain.connect(audioCtx.destination);
 
-      // --- LAYER A: Pink Noise Rain through Tree Leaves ---
       const bufferSize = audioCtx.sampleRate * 4;
       const pinkBuffer = audioCtx.createBuffer(2, bufferSize, audioCtx.sampleRate);
       for (let ch = 0; ch < 2; ch++) {
@@ -806,15 +825,12 @@
       rainPinkGain.connect(masterAmbienceGain);
       pinkSource.start();
 
-      // --- LAYER B: Raindrops Hitting Window & Oak Leaves ---
       const patterBuffer = audioCtx.createBuffer(2, bufferSize, audioCtx.sampleRate);
       for (let ch = 0; ch < 2; ch++) {
         const out = patterBuffer.getChannelData(ch);
         let env = 0;
         for (let i = 0; i < bufferSize; i++) {
-          if (Math.random() < 0.0045) {
-            env = 0.4 + Math.random() * 0.6;
-          }
+          if (Math.random() < 0.0045) env = 0.4 + Math.random() * 0.6;
           env *= 0.992;
           out[i] = (Math.random() * 2 - 1) * env * 0.18;
         }
@@ -837,37 +853,6 @@
       rainPatterGain.connect(masterAmbienceGain);
       patterSource.start();
 
-      // --- LAYER C: Warm Woodland Hearth Crackle ---
-      const crackleBuffer = audioCtx.createBuffer(2, bufferSize, audioCtx.sampleRate);
-      for (let ch = 0; ch < 2; ch++) {
-        const out = crackleBuffer.getChannelData(ch);
-        let popEnv = 0;
-        for (let i = 0; i < bufferSize; i++) {
-          if (Math.random() < 0.0006) {
-            popEnv = 0.45 + Math.random() * 0.5;
-          }
-          popEnv *= 0.96;
-          out[i] = (Math.random() * 2 - 1) * popEnv * 0.3;
-        }
-      }
-
-      const crackleSource = audioCtx.createBufferSource();
-      crackleSource.buffer = crackleBuffer;
-      crackleSource.loop = true;
-
-      const crackleFilter = audioCtx.createBiquadFilter();
-      crackleFilter.type = 'highpass';
-      crackleFilter.frequency.value = 1800;
-
-      fireCrackleGain = audioCtx.createGain();
-      fireCrackleGain.gain.value = 0.3 * state.emberIntensity;
-
-      crackleSource.connect(crackleFilter);
-      crackleFilter.connect(fireCrackleGain);
-      fireCrackleGain.connect(masterAmbienceGain);
-      crackleSource.start();
-
-      // Connect <audio> element for uploaded song
       const audioEl = document.getElementById('song-audio');
       songSourceNode = audioCtx.createMediaElementSource(audioEl);
       songGainNode = audioCtx.createGain();
@@ -901,7 +886,7 @@
 
       state.demoPlaying = forceState !== undefined ? forceState : !state.demoPlaying;
       const btn = document.getElementById('demo-music-btn');
-      btn.textContent = state.demoPlaying ? '🎸 Auto-Fingerpick: ON' : '🎸 Auto-Fingerpick: OFF';
+      btn.textContent = state.demoPlaying ? '🎸 Acoustic Beat: ON' : '🎸 Acoustic Beat: OFF';
       btn.classList.toggle('active-toggle', state.demoPlaying);
 
       if (demoIntervalId) {
@@ -914,28 +899,26 @@
         if (!audioEl.paused) audioEl.pause();
 
         let step = 0;
-        const pattern = [0, 2, 3, 1, 4, 3, 5, 3]; // Fingerpicking string order
+        const pattern = [0, 2, 3, 1, 4, 3, 5, 2];
         demoIntervalId = setInterval(() => {
           if (!state.demoPlaying) return;
           if (step % 16 === 0) {
-            setChord((state.activeChordIdx + 1) % CHORDS.length);
+            state.activeChordIdx = (state.activeChordIdx + 1) % CHORDS.length;
+          }
+          // Kick stomp on every 2nd beat so Garfield bounces!
+          if (step % 2 === 0) {
+            triggerKickStomp();
           }
           const strIdx = pattern[step % pattern.length];
           const vel = (step % 4 === 0) ? 0.26 : 0.16;
-          pluckGuitarString(strIdx, vel, true);
+          pluckGuitarString(strIdx, vel, step % 2 === 0);
           step++;
-        }, 280);
+        }, 250);
       }
     }
 
-    // Dissect FFT bins into 4 distinct musical components:
-    // 1. Kick Stomp & Bass (40 - 150 Hz) -> bins 1..4
-    // 2. Fingerpicked Acoustic Guitar (180 - 950 Hz + transient pluck boost) -> bins 4..22
-    // 3. Vocals & Choir Harmonies (320 - 2800 Hz sustained energy) -> bins 8..65
-    // 4. Claps, Shakers & Cymbals (3200 - 12000 Hz) -> bins 75..260
     function updateInstrumentDissection() {
       if (!analyser) return;
-
       analyser.getByteFrequencyData(freqData);
 
       let bassSum = 0;
@@ -945,7 +928,6 @@
       let guitarSum = 0;
       for (let i = 4; i <= 22; i++) guitarSum += freqData[i];
       const rawGuitar = guitarSum / (19 * 255);
-      // Detect plucked transient spikes in the guitar band
       const pluckTransient = Math.max(0, rawGuitar - state.prevGuitarRaw) * 2.8;
       state.prevGuitarRaw = rawGuitar * 0.8 + state.prevGuitarRaw * 0.2;
 
@@ -957,38 +939,36 @@
       for (let i = 75; i <= 220; i++) percSum += freqData[i];
       const rawPerc = percSum / (146 * 255);
 
-      state.stemBass = state.stemBass * 0.72 + rawBass * 0.28;
+      state.stemBass = state.stemBass * 0.70 + rawBass * 0.30;
       state.stemGuitar = Math.min(1, state.stemGuitar * 0.70 + (rawGuitar * 0.75 + pluckTransient) * 0.30);
-      state.stemVocal = state.stemVocal * 0.82 + rawVocal * 0.18;
+      state.stemVocal = state.stemVocal * 0.80 + rawVocal * 0.20;
       state.stemPerc = state.stemPerc * 0.68 + rawPerc * 0.32;
 
-      // Sympathetic guitar string vibration when an uploaded song plays guitar notes!
       if (state.songPlaying && pluckTransient > 0.07) {
         const targetStr = Math.floor(Math.random() * 6);
         guitarStrings[targetStr].vibration = Math.max(guitarStrings[targetStr].vibration, pluckTransient * 35);
         guitarStrings[targetStr].glow = Math.min(1, guitarStrings[targetStr].glow + 0.5);
+        if (Math.random() < 0.35 && state.showGarfield) {
+          spawnMusicNote(width * state.garfX, height * state.garfY - 80);
+        }
       }
 
-      // Update live UI meters
       document.getElementById('stem-guitar-bar').style.width = `${Math.max(4, Math.min(100, state.stemGuitar * 115))}%`;
       document.getElementById('stem-vocal-bar').style.width = `${Math.max(4, Math.min(100, state.stemVocal * 120))}%`;
-      document.getElementById('stem-bass-bar').style.width = `${Math.max(4, Math.min(100, state.stemBass * 110))}%`;
+      document.getElementById('stem-bass-bar').style.width = `${Math.max(4, Math.min(100, state.stemBass * 115))}%`;
       document.getElementById('stem-perc-bar').style.width = `${Math.max(4, Math.min(100, state.stemPerc * 140))}%`;
     }
 
     // ============================================================================
-    // 5. 2D PARTICLE SYSTEMS (RAIN, SUNLIT MOTES / EMBERS, SPLASHES)
+    // 5. 2D PARTICLE SYSTEMS (SUNBEAM MOTES / EMBERS & RAIN)
     // ============================================================================
     let width = window.innerWidth;
     let height = window.innerHeight;
 
     const raindrops = [];
-    const ripples = [];
-    const splashes = [];
     const embers = [];
-
-    const MAX_RAIN = 540;
-    const MAX_EMBERS = 140;
+    const MAX_RAIN = 500;
+    const MAX_EMBERS = 120;
 
     function initParticles() {
       raindrops.length = 0;
@@ -1000,7 +980,7 @@
           layer,
           speed: (11 + layer * 5.5) + Math.random() * 4,
           len: (17 + layer * 13) + Math.random() * 10,
-          alpha: (0.16 + layer * 0.14) + Math.random() * 0.1
+          alpha: (0.14 + layer * 0.12) + Math.random() * 0.08
         });
       }
 
@@ -1011,48 +991,16 @@
     }
 
     function createEmber(randomY = false) {
-      const isOak = state.sceneMode === 'oak';
-      const startX = isOak
-        ? width * (0.22 + Math.random() * 0.56)
-        : width * (0.45 + (Math.random() - 0.5) * 0.35);
-      const startY = randomY
-        ? height * (0.15 + Math.random() * 0.75)
-        : height * (isOak ? (0.3 + Math.random() * 0.55) : (0.65 + Math.random() * 0.25));
-
       return {
-        x: startX,
-        y: startY,
-        vx: (Math.random() - 0.5) * 0.65,
-        vy: isOak ? -(0.22 + Math.random() * 0.75) : -(0.45 + Math.random() * 1.3),
-        size: 1.3 + Math.random() * 2.8,
-        alpha: 0.35 + Math.random() * 0.65,
+        x: width * (0.1 + Math.random() * 0.8),
+        y: randomY ? height * (0.1 + Math.random() * 0.85) : height * (0.65 + Math.random() * 0.3),
+        vx: (Math.random() - 0.5) * 0.55,
+        vy: -(0.2 + Math.random() * 0.8),
+        size: 1.2 + Math.random() * 2.6,
+        alpha: 0.3 + Math.random() * 0.65,
         phase: Math.random() * Math.PI * 2,
-        hue: isOak ? (42 + Math.random() * 32) : (16 + Math.random() * 26)
+        hue: 32 + Math.random() * 28
       };
-    }
-
-    function spawnSplash(x, y, isAudioPulse = false) {
-      if (ripples.length > 80) ripples.shift();
-      ripples.push({
-        x,
-        y,
-        rx: 1,
-        ry: 0.35,
-        maxRx: (isAudioPulse ? 22 : 10) + Math.random() * 14,
-        alpha: (isAudioPulse ? 0.5 : 0.34) + Math.random() * 0.15
-      });
-
-      if (Math.random() < 0.55 && splashes.length < 85) {
-        for (let k = 0; k < 2; k++) {
-          splashes.push({
-            x,
-            y,
-            vx: (Math.random() - 0.5) * 2.4,
-            vy: -(1.3 + Math.random() * 2.1),
-            life: 1.0
-          });
-        }
-      }
     }
 
     function resizeCanvas() {
@@ -1067,7 +1015,158 @@
     initParticles();
 
     // ============================================================================
-    // 6. MAIN RENDER LOOP
+    // 6. DANCING GARFIELD RENDERER (SLICE-WARP ARTICULATION + BOUNCE + MOVES)
+    // ============================================================================
+    let danceTime = 0;
+
+    function drawDancingGarfield(artRect) {
+      if (!state.showGarfield || !garfieldLoaded) return;
+
+      const move = DANCE_MOVES[state.danceMoveIdx].id;
+      const audioBoost = 1 + state.stemBass * 1.9 + state.stemGuitar * 1.1;
+      danceTime += 0.065 * state.danceEnergy * audioBoost;
+
+      const baseW = Math.min(width, height) * 0.38 * state.garfieldScale;
+      const baseH = baseW * (garfieldImage.height / garfieldImage.width);
+
+      // Compute position & dance transformations based on selected move
+      let cx = width * state.garfX;
+      let floorY = height * state.garfY;
+      let bounceY = 0;
+      let swayX = 0;
+      let squashX = 1.0;
+      let stretchY = 1.0;
+      let rotation = 0;
+      let flipX = 1;
+      let perspectiveScale = 1.0;
+
+      const beatSin = Math.sin(danceTime * 2);
+      const beatCos = Math.cos(danceTime * 2);
+      const fastSin = Math.sin(danceTime * 4);
+
+      if (move === 'groove') {
+        bounceY = -Math.pow(beatSin, 2) * (42 * state.danceEnergy + state.stemBass * 65);
+        swayX = Math.sin(danceTime) * (46 * state.danceEnergy);
+        stretchY = 1.0 + 0.15 * fastSin * state.danceEnergy + state.stemBass * 0.18;
+        squashX = 1.0 - 0.11 * fastSin * state.danceEnergy - state.stemBass * 0.12;
+        rotation = beatSin * 0.16 * state.danceEnergy;
+        flipX = Math.sin(danceTime * 0.5) < 0 ? -1 : 1;
+      } else if (move === 'breakdance') {
+        // Spins like a helicopter on the sunlit train floor + pops up on the beat!
+        bounceY = -Math.abs(beatSin) * (28 + state.stemBass * 75);
+        rotation = danceTime * 2.6;
+        squashX = 1.0 + 0.12 * beatCos;
+        stretchY = 1.0 - 0.10 * beatCos;
+      } else if (move === 'aisle_strut') {
+        // Moonwalks up and down the sunlit patches of the train car aisle in 3D perspective!
+        const walkCycle = (Math.sin(danceTime * 0.45) + 1) * 0.5; // 0 (far down aisle) to 1 (foreground)
+        if (!state.draggingGarfield) {
+          cx = width * 0.49 + Math.sin(danceTime * 1.8) * 28;
+          floorY = height * (0.64 + walkCycle * 0.27);
+        }
+        perspectiveScale = 0.48 + walkCycle * 0.68;
+        bounceY = -Math.pow(beatSin, 2) * 32 * perspectiveScale;
+        stretchY = 1.0 + 0.13 * fastSin;
+        squashX = 1.0 - 0.09 * fastSin;
+        rotation = beatSin * 0.12;
+        flipX = Math.cos(danceTime * 0.45) < 0 ? -1 : 1;
+      } else if (move === 'bench_lounge') {
+        // Lounges right on the sunlit red velvet train bench on the left!
+        if (!state.draggingGarfield) {
+          cx = width * 0.255;
+          floorY = height * 0.675;
+        }
+        perspectiveScale = 0.82;
+        bounceY = -Math.pow(beatSin, 2) * (18 + state.stemBass * 35);
+        stretchY = 1.0 + 0.10 * fastSin;
+        squashX = 1.0 - 0.08 * fastSin;
+        rotation = -0.06 + beatSin * 0.08;
+      } else if (move === 'rave') {
+        bounceY = -Math.pow(beatSin, 2) * (68 * state.danceEnergy + state.stemBass * 90);
+        swayX = Math.sin(danceTime * 1.5) * 65;
+        stretchY = 1.0 + 0.22 * fastSin;
+        squashX = 1.0 - 0.16 * fastSin;
+        rotation = Math.sin(danceTime * 2) * 0.28;
+        flipX = Math.sin(danceTime) < 0 ? -1 : 1;
+      }
+
+      const drawW = baseW * squashX * perspectiveScale;
+      const drawH = baseH * stretchY * perspectiveScale;
+
+      // 1. Draw Floor Contact Shadow on the Sunlit Train Floor / Bench
+      ctx.save();
+      const shadowScale = Math.max(0.45, 1.0 + bounceY / 180);
+      const shadowRx = baseW * 0.42 * perspectiveScale * shadowScale;
+      const shadowRy = Math.max(6, baseH * 0.085 * perspectiveScale * shadowScale);
+
+      const sGrad = ctx.createRadialGradient(
+        cx + swayX, floorY, 2,
+        cx + swayX, floorY, shadowRx
+      );
+      sGrad.addColorStop(0, 'rgba(12, 6, 3, 0.68)');
+      sGrad.addColorStop(0.6, 'rgba(18, 9, 4, 0.35)');
+      sGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+      ctx.fillStyle = sGrad;
+      ctx.beginPath();
+      ctx.ellipse(cx + swayX, floorY, shadowRx, shadowRy, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // 2. Draw Articulated / Wave-Deformed Dancing Garfield
+      ctx.save();
+      ctx.translate(cx + swayX, floorY - drawH * 0.46 + bounceY);
+      ctx.rotate(rotation);
+      ctx.scale(flipX, 1);
+
+      // Slice-warp rendering: divide Garfield into horizontal bands so his head bobs,
+      // belly grooves, and feet tap independently!
+      const numSlices = 24;
+      const srcSliceH = garfieldImage.height / numSlices;
+      const dstSliceH = drawH / numSlices;
+
+      for (let s = 0; s < numSlices; s++) {
+        const v = s / numSlices; // 0 = top of head/ears, 0.5 = belly, 1.0 = bottom paws
+        // Wave groove that ripples from head to paws
+        const waveOffsetX =
+          Math.sin(danceTime * 4 - v * Math.PI * 2.2) *
+          (10 * state.danceEnergy + state.stemGuitar * 18) *
+          Math.sin(v * Math.PI);
+
+        ctx.drawImage(
+          garfieldImage,
+          0, s * srcSliceH, garfieldImage.width, srcSliceH + 0.8,
+          -drawW * 0.5 + waveOffsetX,
+          -drawH * 0.5 + s * dstSliceH,
+          drawW,
+          dstSliceH + 0.6
+        );
+      }
+
+      ctx.restore();
+
+      // 3. Draw Floating Musical Notes around Garfield
+      ctx.save();
+      for (let i = musicNotes.length - 1; i >= 0; i--) {
+        const n = musicNotes[i];
+        n.x += n.vx + Math.sin(danceTime + i) * 0.4;
+        n.y += n.vy;
+        n.life -= 0.018;
+        if (n.life <= 0) {
+          musicNotes.splice(i, 1);
+          continue;
+        }
+        ctx.font = `bold ${Math.round(n.size)}px Georgia, serif`;
+        ctx.fillStyle = `hsla(${n.hue}, 100%, 72%, ${n.life})`;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        ctx.shadowBlur = 8;
+        ctx.fillText(n.symbol, n.x, n.y);
+      }
+      ctx.restore();
+    }
+
+    // ============================================================================
+    // 7. MAIN RENDER LOOP
     // ============================================================================
     let time = 0;
 
@@ -1080,53 +1179,26 @@
 
       ctx.clearRect(0, 0, width, height);
 
-      const isOak = state.sceneMode === 'oak';
-      const activeImg = isOak ? oakImage : twilightImage;
-      const isLoaded = isOak ? oakLoaded : twilightLoaded;
+      const sceneId = SCENES[state.sceneIdx].id;
+      let activeImg = trainImage;
+      let isLoaded = trainLoaded;
+      if (sceneId === 'oak') { activeImg = oakImage; isLoaded = oakLoaded; }
+      if (sceneId === 'twilight') { activeImg = twilightImage; isLoaded = twilightLoaded; }
 
       let artRect = { x: 0, y: 0, w: width, h: height };
 
-      // 1. Draw 2D Background Illustration (with gentle hand-drawn breathing)
+      // 1. Draw Background Scene
       if (isLoaded) {
-        if (state.fitMode === 'contain' && isOak) {
-          ctx.save();
-          const bgScale = Math.max(width / activeImg.width, height / activeImg.height) * 1.1;
-          const bgW = activeImg.width * bgScale;
-          const bgH = activeImg.height * bgScale;
-          ctx.filter = 'blur(28px) brightness(0.42)';
-          ctx.drawImage(
-            activeImg,
-            (width - bgW) * 0.5 - state.mouseX * 10,
-            (height - bgH) * 0.5 - state.mouseY * 10,
-            bgW,
-            bgH
-          );
-          ctx.restore();
-
-          const scale = Math.min(width / activeImg.width, height / activeImg.height) * 0.96;
-          const drawW = activeImg.width * scale;
-          const drawH = activeImg.height * scale;
-          const offsetX = (width - drawW) * 0.5 + state.mouseX * 12;
-          const offsetY = (height - drawH) * 0.5 + state.mouseY * 8;
-          artRect = { x: offsetX, y: offsetY, w: drawW, h: drawH };
-
-          ctx.save();
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
-          ctx.shadowBlur = 40;
-          ctx.drawImage(activeImg, offsetX, offsetY, drawW, drawH);
-          ctx.restore();
-        } else {
-          const scale = Math.max(width / activeImg.width, height / activeImg.height) * 1.03;
-          const drawW = activeImg.width * scale;
-          const drawH = activeImg.height * scale;
-          const offsetX = (width - drawW) * 0.5 + state.mouseX * 14;
-          const offsetY = (height - drawH) * 0.5 + state.mouseY * 10;
-          artRect = { x: offsetX, y: offsetY, w: drawW, h: drawH };
-          ctx.drawImage(activeImg, offsetX, offsetY, drawW, drawH);
-        }
+        const scale = Math.max(width / activeImg.width, height / activeImg.height) * 1.03;
+        const drawW = activeImg.width * scale;
+        const drawH = activeImg.height * scale;
+        const offsetX = (width - drawW) * 0.5 + state.mouseX * 12;
+        const offsetY = (height - drawH) * 0.5 + state.mouseY * 8;
+        artRect = { x: offsetX, y: offsetY, w: drawW, h: drawH };
+        ctx.drawImage(activeImg, offsetX, offsetY, drawW, drawH);
       }
 
-      // 2. Dynamic Canopy Sunburst (Driven by Vocals + Guitar) or Bonfire Glow (Driven by Kick/Bass)
+      // 2. Dynamic Sunlight Rays / Rave Lights / Warm Glow
       const flicker = Math.sin(time * 4.5) * 0.04 + Math.sin(time * 9.2) * 0.03;
       const glowPower = Math.min(
         1.5,
@@ -1137,7 +1209,29 @@
         ctx.save();
         ctx.globalCompositeOperation = 'screen';
 
-        if (isOak) {
+        if (sceneId === 'train') {
+          // Warm golden afternoon sunlight streaming through the left train windows onto the floor
+          const winX = width * 0.22;
+          const winY = height * 0.36;
+          const sunRadius = Math.max(width, height) * (0.45 + glowPower * 0.15);
+
+          const isRave = DANCE_MOVES[state.danceMoveIdx].id === 'rave';
+          const raveHue = (time * 120) % 360;
+
+          const sunGrad = ctx.createRadialGradient(winX, winY, 10, winX, winY, sunRadius);
+          if (isRave) {
+            sunGrad.addColorStop(0, `hsla(${raveHue}, 95%, 65%, ${0.42 * glowPower})`);
+            sunGrad.addColorStop(0.5, `hsla(${(raveHue + 90) % 360}, 90%, 55%, ${0.22 * glowPower})`);
+            sunGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          } else {
+            sunGrad.addColorStop(0, `rgba(255, 225, 165, ${0.34 * glowPower})`);
+            sunGrad.addColorStop(0.45, `rgba(255, 170, 85, ${0.18 * glowPower})`);
+            sunGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          }
+
+          ctx.fillStyle = sunGrad;
+          ctx.fillRect(0, 0, width, height);
+        } else if (sceneId === 'oak') {
           const sunX = artRect.x + artRect.w * 0.525;
           const sunY = artRect.y + artRect.h * 0.335;
           const sunRadius = Math.max(artRect.w, artRect.h) * (0.34 + glowPower * 0.16);
@@ -1145,36 +1239,9 @@
           const sunGrad = ctx.createRadialGradient(sunX, sunY, 4, sunX, sunY, sunRadius);
           sunGrad.addColorStop(0, `rgba(255, 252, 210, ${0.46 * glowPower})`);
           sunGrad.addColorStop(0.32, `rgba(220, 235, 130, ${0.24 * glowPower})`);
-          sunGrad.addColorStop(0.68, `rgba(140, 185, 75, ${0.09 * glowPower})`);
           sunGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
           ctx.fillStyle = sunGrad;
           ctx.fillRect(0, 0, width, height);
-
-          // Volumetric Sunbeams ("God rays") reacting to Hozier's vocals & guitar chords
-          ctx.translate(sunX, sunY);
-          const rayCount = 5;
-          for (let r = 0; r < rayCount; r++) {
-            const angle = (0.38 + r * 0.22) + Math.sin(time * 0.4 + r) * 0.03;
-            const rayLen = Math.max(artRect.w, artRect.h) * 0.85;
-            const rayWidth = 35 + r * 18 + state.stemVocal * 45;
-
-            ctx.save();
-            ctx.rotate(angle);
-            const rGrad = ctx.createLinearGradient(0, 0, rayLen, 0);
-            rGrad.addColorStop(0, `rgba(255, 248, 195, ${(0.09 + state.stemVocal * 0.1) * state.emberIntensity})`);
-            rGrad.addColorStop(0.6, `rgba(205, 230, 130, ${0.04 * state.emberIntensity})`);
-            rGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = rGrad;
-            ctx.beginPath();
-            ctx.moveTo(0, -rayWidth * 0.25);
-            ctx.lineTo(rayLen, -rayWidth);
-            ctx.lineTo(rayLen, rayWidth);
-            ctx.lineTo(0, rayWidth * 0.25);
-            ctx.closePath();
-            ctx.fill();
-            ctx.restore();
-          }
         } else {
           const fireX = artRect.x + artRect.w * 0.604;
           const fireY = artRect.y + artRect.h * 0.675;
@@ -1183,24 +1250,25 @@
           const fireGrad = ctx.createRadialGradient(fireX, fireY, 4, fireX, fireY, fireRadius);
           fireGrad.addColorStop(0, `rgba(255, 210, 130, ${0.42 * glowPower})`);
           fireGrad.addColorStop(0.35, `rgba(255, 120, 40, ${0.26 * glowPower})`);
-          fireGrad.addColorStop(0.7, `rgba(180, 55, 15, ${0.10 * glowPower})`);
           fireGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
           ctx.fillStyle = fireGrad;
           ctx.fillRect(0, 0, width, height);
         }
         ctx.restore();
       }
 
-      // 3. Floating Sunlit Forest Motes & Glowing Embers (Driven by Kick/Bass & Guitar)
+      // 3. Draw Dancing Garfield!
+      drawDancingGarfield(artRect);
+
+      // 4. Floating Golden Dust Motes / Embers
       const activeEmberCount = Math.floor(MAX_EMBERS * Math.min(1, state.emberIntensity + state.stemBass * 0.4));
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
       for (let i = 0; i < activeEmberCount; i++) {
         const e = embers[i];
-        const speedBoost = 1 + state.stemBass * 2.4 + state.stemGuitar * 1.1;
+        const speedBoost = 1 + state.stemBass * 2.2 + state.stemGuitar * 1.1;
         e.phase += 0.035;
-        e.x += (e.vx + Math.sin(e.phase) * 0.5 - state.windAngleDeg * 0.012) * speedBoost;
+        e.x += (e.vx + Math.sin(e.phase) * 0.45) * speedBoost;
         e.y += e.vy * speedBoost;
 
         if (e.y < -20 || e.x < -20 || e.x > width + 20) {
@@ -1208,13 +1276,12 @@
         }
 
         const flickerAlpha = e.alpha * (0.65 + 0.35 * Math.sin(e.phase * 2.1));
-        const glowRadius = e.size * (3.0 + state.stemBass * 2.8);
+        const glowRadius = e.size * (2.8 + state.stemBass * 2.5);
 
         const eGrad = ctx.createRadialGradient(e.x, e.y, 0.2, e.x, e.y, glowRadius);
-        const hue = isOak ? 52 : e.hue;
-        eGrad.addColorStop(0, `hsla(${hue + 10}, 100%, 88%, ${flickerAlpha})`);
-        eGrad.addColorStop(0.45, `hsla(${hue}, 95%, 60%, ${flickerAlpha * 0.6})`);
-        eGrad.addColorStop(1, `hsla(${hue}, 100%, 40%, 0)`);
+        eGrad.addColorStop(0, `hsla(${e.hue + 12}, 100%, 88%, ${flickerAlpha})`);
+        eGrad.addColorStop(0.45, `hsla(${e.hue}, 95%, 60%, ${flickerAlpha * 0.55})`);
+        eGrad.addColorStop(1, `hsla(${e.hue}, 100%, 40%, 0)`);
 
         ctx.fillStyle = eGrad;
         ctx.beginPath();
@@ -1223,148 +1290,51 @@
       }
       ctx.restore();
 
-      // 4. 2D Raindrops Outside in the Forest & Bark Splashes
+      // 5. Optional Rain Layer
       const activeRainCount = Math.floor(MAX_RAIN * state.rainDensity);
-      const windRad = (state.windAngleDeg * Math.PI) / 180;
-      const sinWind = Math.sin(windRad);
-      const cosWind = Math.cos(windRad);
+      if (activeRainCount > 0) {
+        const windRad = (state.windAngleDeg * Math.PI) / 180;
+        const sinWind = Math.sin(windRad);
+        const cosWind = Math.cos(windRad);
 
-      ctx.save();
-      ctx.lineCap = 'round';
-      const sunCenterX = artRect.x + artRect.w * 0.52;
-      const sunCenterY = artRect.y + artRect.h * 0.38;
+        ctx.save();
+        ctx.lineCap = 'round';
+        for (let i = 0; i < activeRainCount; i++) {
+          const d = raindrops[i];
+          const speedMult = 1 + state.stemPerc * 0.4;
+          d.x += sinWind * d.speed * speedMult;
+          d.y += cosWind * d.speed * speedMult;
 
-      for (let i = 0; i < activeRainCount; i++) {
-        const d = raindrops[i];
-        const speedMult = 1 + state.stemPerc * 0.4;
-        d.x += sinWind * d.speed * speedMult;
-        d.y += cosWind * d.speed * speedMult;
-
-        if (isOak) {
-          const relX = (d.x - artRect.x) / artRect.w;
-          const relY = (d.y - artRect.y) / artRect.h;
-          const hitsBranchArch =
-            (relX > 0.24 && relX < 0.57 && Math.abs(relY - (0.42 + Math.pow(relX - 0.42, 2) * 3.5)) < 0.03) ||
-            (relX > 0.12 && relX < 0.44 && Math.abs(relY - 0.72) < 0.025);
-
-          if (hitsBranchArch && d.layer === 2 && Math.random() < 0.14) {
-            spawnSplash(d.x, d.y, false);
-            d.y = -20;
+          if (d.y > height + 30 || d.x < -150 || d.x > width + 150) {
+            d.y = -20 - Math.random() * 40;
             d.x = Math.random() * (width + 400) - 200;
-            continue;
           }
+
+          ctx.strokeStyle = `rgba(220, 235, 245, ${d.alpha})`;
+          ctx.lineWidth = d.layer === 2 ? 1.4 : (d.layer === 1 ? 1.0 : 0.65);
+          ctx.beginPath();
+          ctx.moveTo(d.x - sinWind * d.len, d.y - cosWind * d.len);
+          ctx.lineTo(d.x, d.y);
+          ctx.stroke();
         }
-
-        if (d.y > height + 30 || d.x < -150 || d.x > width + 150) {
-          d.y = -20 - Math.random() * 40;
-          d.x = Math.random() * (width + 400) - 200;
-        }
-
-        const tailX = d.x - sinWind * d.len;
-        const tailY = d.y - cosWind * d.len;
-        const distToSun = Math.hypot(d.x - sunCenterX, d.y - sunCenterY);
-        const inSunbeam = isOak && distToSun < artRect.w * 0.28;
-
-        ctx.strokeStyle = inSunbeam
-          ? `rgba(255, 248, 190, ${d.alpha * 1.25})`
-          : (isOak ? `rgba(210, 235, 220, ${d.alpha})` : `rgba(185, 215, 255, ${d.alpha})`);
-        ctx.lineWidth = d.layer === 2 ? 1.45 : (d.layer === 1 ? 1.0 : 0.65);
-        ctx.beginPath();
-        ctx.moveTo(tailX, tailY);
-        ctx.lineTo(d.x, d.y);
-        ctx.stroke();
+        ctx.restore();
       }
 
-      // Bark / Puddle Ripples & Splashes
-      for (let i = ripples.length - 1; i >= 0; i--) {
-        const r = ripples[i];
-        r.rx += 0.4 + state.stemPerc * 0.45;
-        r.ry = r.rx * 0.28;
-        r.alpha *= 0.95;
-        if (r.alpha < 0.02 || r.rx > r.maxRx) {
-          ripples.splice(i, 1);
-          continue;
-        }
-        ctx.strokeStyle = `rgba(235, 245, 195, ${r.alpha})`;
-        ctx.lineWidth = 1.0;
-        ctx.beginPath();
-        ctx.ellipse(r.x, r.y, r.rx, r.ry, 0, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      ctx.fillStyle = 'rgba(240, 250, 210, 0.7)';
-      for (let i = splashes.length - 1; i >= 0; i--) {
-        const s = splashes[i];
-        s.x += s.vx;
-        s.y += s.vy;
-        s.vy += 0.22;
-        s.life -= 0.08;
-        if (s.life <= 0) {
-          splashes.splice(i, 1);
-          continue;
-        }
-        ctx.globalAlpha = s.life * 0.75;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, 1.3, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-
-      // 5. #4: Tactile Foggy Windowpane & Trickling Glass Beads
+      // 6. Optional Foggy Windowpane (#4)
       if (state.windowFogEnabled && state.fogMaxOpacity > 0.01) {
-        // Very slowly re-condense fog on the glass
-        if (Math.random() < 0.12) {
-          fogCtx.save();
-          fogCtx.globalCompositeOperation = 'source-over';
-          fogCtx.fillStyle = 'rgba(185, 204, 194, 0.003)';
-          fogCtx.fillRect(0, 0, fogCanvas.width, fogCanvas.height);
-          fogCtx.restore();
-        }
-
-        // Update trickling water droplets on the glass that carve clear trails through the fog
         for (const gd of glassDrops) {
-          if (gd.stuckTimer > 0) {
-            gd.stuckTimer -= 1 + state.stemBass * 3;
-          } else {
-            gd.y += gd.vy * (1 + state.rainDensity * 0.8 + state.stemBass * 1.5);
-            gd.x += Math.sin(gd.y * 0.04 + gd.r) * 0.35;
-            if (Math.random() < 0.02) gd.stuckTimer = 20 + Math.random() * 50;
-            // Carve a tiny trail in the window condensation
-            wipeFogAt(gd.x, gd.y, gd.r * 2.2, 0.55);
-          }
-
-          if (gd.y > height + 20) {
-            Object.assign(gd, createGlassDrop(false));
-          }
+          gd.y += gd.vy * (1 + state.rainDensity * 0.8 + state.stemBass * 1.5);
+          gd.x += Math.sin(gd.y * 0.04 + gd.r) * 0.35;
+          wipeFogAt(gd.x, gd.y, gd.r * 2.2, 0.55);
+          if (gd.y > height + 20) Object.assign(gd, createGlassDrop(false));
         }
-
-        // Draw the condensation layer onto the main canvas
         ctx.save();
         ctx.globalAlpha = state.fogMaxOpacity;
         ctx.drawImage(fogCanvas, 0, 0);
         ctx.restore();
-
-        // Draw the specular water beads sitting on the windowpane
-        ctx.save();
-        for (const gd of glassDrops) {
-          ctx.fillStyle = 'rgba(235, 248, 240, 0.42)';
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.ellipse(gd.x, gd.y, gd.r * 0.85, gd.r * 1.15, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-
-          // Tiny highlight reflection inside each glass droplet
-          ctx.fillStyle = 'rgba(255, 255, 230, 0.85)';
-          ctx.beginPath();
-          ctx.arc(gd.x - gd.r * 0.25, gd.y - gd.r * 0.3, gd.r * 0.25, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
       }
 
-      // 6. #5: Interactive 6 Acoustic Guitar Strings Overlay
+      // 7. Interactive 6 Acoustic Guitar Strings (#5)
       drawGuitarStrings();
 
       requestAnimationFrame(render);
@@ -1375,16 +1345,15 @@
       const chord = CHORDS[state.activeChordIdx];
 
       ctx.save();
-      // Subtle wooden/brass bridge caps at top and bottom of strings
-      ctx.fillStyle = 'rgba(20, 26, 20, 0.55)';
-      ctx.strokeStyle = 'rgba(232, 185, 84, 0.35)';
+      ctx.fillStyle = 'rgba(22, 16, 12, 0.62)';
+      ctx.strokeStyle = 'rgba(242, 157, 56, 0.35)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.roundRect(geom.xStart - 16, geom.yTop - 26, geom.panelWidth + 32, 22, 6);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = '#f5df9e';
+      ctx.fillStyle = '#ffd59e';
       ctx.font = '600 11px -apple-system, BlinkMacSystemFont, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(`🎸 ${chord.name} (Keys 1-4)`, geom.xStart + geom.panelWidth * 0.5, geom.yTop - 11);
@@ -1393,14 +1362,12 @@
         const s = guitarStrings[i];
         const baseX = geom.xStart + i * geom.spacing;
 
-        // Damped string physics
         s.phase += 0.65 + i * 0.08;
         s.vibration *= 0.92;
         s.glow *= 0.94;
 
         const offsetMid = Math.sin(s.phase) * s.vibration;
 
-        // String shadow
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.55)';
         ctx.lineWidth = 2.6 - i * 0.22;
         ctx.beginPath();
@@ -1408,7 +1375,6 @@
         ctx.quadraticCurveTo(baseX + offsetMid + 2, (geom.yTop + geom.yBottom) * 0.5, baseX + 2, geom.yBottom);
         ctx.stroke();
 
-        // Phosphor-bronze acoustic guitar string with warm glow when plucked
         if (s.glow > 0.05) {
           ctx.shadowColor = '#ffcf6b';
           ctx.shadowBlur = 14 * s.glow;
@@ -1418,7 +1384,7 @@
 
         ctx.strokeStyle = s.glow > 0.05
           ? `rgba(255, 236, 175, ${0.75 + s.glow * 0.25})`
-          : `rgba(218, 182, 112, ${0.48 + i * 0.04})`;
+          : `rgba(228, 178, 105, ${0.48 + i * 0.04})`;
         ctx.lineWidth = 2.3 - i * 0.22;
 
         ctx.beginPath();
@@ -1426,14 +1392,13 @@
         ctx.quadraticCurveTo(baseX + offsetMid, (geom.yTop + geom.yBottom) * 0.5, baseX, geom.yBottom);
         ctx.stroke();
 
-        // Key label badge at bottom of each string
         ctx.shadowBlur = 0;
-        ctx.fillStyle = s.glow > 0.1 ? 'rgba(232, 185, 84, 0.85)' : 'rgba(15, 22, 18, 0.65)';
+        ctx.fillStyle = s.glow > 0.1 ? 'rgba(242, 157, 56, 0.85)' : 'rgba(18, 14, 12, 0.68)';
         ctx.beginPath();
         ctx.arc(baseX, geom.yBottom + 14, 9, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = s.glow > 0.1 ? '#111' : '#d8d2c5';
+        ctx.fillStyle = s.glow > 0.1 ? '#111' : '#e0d6c8';
         ctx.font = 'bold 10px -apple-system, sans-serif';
         ctx.fillText(chord.keys[i], baseX, geom.yBottom + 17.5);
       }
@@ -1444,16 +1409,38 @@
     requestAnimationFrame(render);
 
     // ============================================================================
-    // 7. MOUSE WIPE, GUITAR STRUMMING & KEYBOARD CONTROLS
+    // 8. INTERACTION: DRAGGING GARFIELD, STRUMMING & DANCE MOVES
     // ============================================================================
+    canvas.addEventListener('mousedown', (e) => {
+      if (state.showGarfield) {
+        const gx = width * state.garfX;
+        const gy = height * state.garfY - 90 * state.garfieldScale;
+        const dist = Math.hypot(e.clientX - gx, e.clientY - gy);
+        if (dist < 140 * state.garfieldScale) {
+          state.draggingGarfield = true;
+          state.dragOffsetX = e.clientX - width * state.garfX;
+          state.dragOffsetY = e.clientY - height * state.garfY;
+          spawnMusicNote(gx, gy);
+          return;
+        }
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      state.draggingGarfield = false;
+    });
+
     window.addEventListener('mousemove', (e) => {
       state.targetMouseX = (e.clientX / width - 0.5) * 2;
       state.targetMouseY = (e.clientY / height - 0.5) * 2;
 
-      // 1. Wipe window condensation where the mouse moves!
+      if (state.draggingGarfield) {
+        state.garfX = Math.max(0.08, Math.min(0.92, (e.clientX - state.dragOffsetX) / width));
+        state.garfY = Math.max(0.25, Math.min(0.96, (e.clientY - state.dragOffsetY) / height));
+      }
+
       wipeFogAt(e.clientX, e.clientY, 52, 0.65);
 
-      // 2. Check if mouse crossed any of the 6 guitar strings to strum them!
       if (state.lastMousePxX !== null) {
         const geom = getGuitarGeometry();
         if (e.clientY >= geom.yTop && e.clientY <= geom.yBottom) {
@@ -1473,24 +1460,16 @@
       state.lastMousePxY = e.clientY;
     });
 
-    canvas.addEventListener('click', (e) => {
-      // Check if clicked near a guitar string
-      const geom = getGuitarGeometry();
-      if (e.clientY >= geom.yTop && e.clientY <= geom.yBottom) {
-        for (let i = 0; i < 6; i++) {
-          const sx = geom.xStart + i * geom.spacing;
-          if (Math.abs(e.clientX - sx) < 16) {
-            pluckGuitarString(i, 0.25, true);
-            return;
-          }
-        }
+    function cycleDanceMove() {
+      state.danceMoveIdx = (state.danceMoveIdx + 1) % DANCE_MOVES.length;
+      const moveName = DANCE_MOVES[state.danceMoveIdx].name;
+      document.getElementById('dance-style-btn').textContent = `🕺 Move: ${moveName}`;
+      document.getElementById('dance-move-label').textContent = moveName;
+      if (state.showGarfield) {
+        spawnMusicNote(width * state.garfX, height * state.garfY - 80);
       }
+    }
 
-      wipeFogAt(e.clientX, e.clientY, 75, 0.95);
-      spawnSplash(e.clientX, e.clientY, true);
-    });
-
-    // Keyboard Playable Guitar (A S D F G H = strings 1..6, Space = full chord strum, 1..4 = chords)
     const keyMap = { 'a': 0, 's': 1, 'd': 2, 'f': 3, 'g': 4, 'h': 5 };
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT') return;
@@ -1501,18 +1480,38 @@
       } else if (e.code === 'Space') {
         e.preventDefault();
         strumFullChord();
+        triggerKickStomp();
+      } else if (k === 'm') {
+        cycleDanceMove();
       } else if (['1', '2', '3', '4'].includes(k)) {
-        setChord(Number(k) - 1);
+        state.activeChordIdx = Number(k) - 1;
         strumFullChord();
       } else if (k === 'z') {
         toggleZenMode();
       }
     });
 
-    // Buttons & Sliders
+    // UI Buttons
     document.getElementById('start-experience-btn').addEventListener('click', () => {
-      setAmbiencePlaying(true);
-      strumFullChord();
+      toggleDemoMusic(true);
+      document.getElementById('start-banner').classList.add('hidden');
+    });
+
+    document.getElementById('garfield-toggle-btn').addEventListener('click', (e) => {
+      state.showGarfield = !state.showGarfield;
+      e.currentTarget.textContent = state.showGarfield ? '🐱 Garfield: ON' : '🐱 Garfield: OFF';
+      e.currentTarget.classList.toggle('active-toggle', state.showGarfield);
+    });
+
+    document.getElementById('dance-style-btn').addEventListener('click', cycleDanceMove);
+
+    document.getElementById('scene-switch-btn').addEventListener('click', (e) => {
+      state.sceneIdx = (state.sceneIdx + 1) % SCENES.length;
+      e.currentTarget.textContent = SCENES[state.sceneIdx].label;
+    });
+
+    document.getElementById('demo-music-btn').addEventListener('click', () => {
+      toggleDemoMusic();
       document.getElementById('start-banner').classList.add('hidden');
     });
 
@@ -1521,38 +1520,22 @@
       document.getElementById('start-banner').classList.add('hidden');
     });
 
-    document.getElementById('demo-music-btn').addEventListener('click', () => {
-      if (!state.ambiencePlaying) setAmbiencePlaying(true);
-      toggleDemoMusic();
-      document.getElementById('start-banner').classList.add('hidden');
-    });
-
     document.getElementById('window-fog-btn').addEventListener('click', (e) => {
       state.windowFogEnabled = !state.windowFogEnabled;
-      e.currentTarget.textContent = state.windowFogEnabled ? '🪟 Foggy Window: ON' : '🪟 Foggy Window: OFF';
+      if (state.windowFogEnabled) fillWindowCondensation(0.85);
+      e.currentTarget.textContent = state.windowFogEnabled ? '🪟 Window Fog: ON' : '🪟 Window Fog: OFF';
       e.currentTarget.classList.toggle('active-toggle', state.windowFogEnabled);
     });
 
-    document.getElementById('refog-btn').addEventListener('click', () => {
-      state.windowFogEnabled = true;
-      document.getElementById('window-fog-btn').textContent = '🪟 Foggy Window: ON';
-      document.getElementById('window-fog-btn').classList.add('active-toggle');
-      fillWindowCondensation(0.9);
+    // Sliders
+    document.getElementById('dance-energy').addEventListener('input', (e) => {
+      state.danceEnergy = Number(e.target.value) / 100;
+      document.getElementById('dance-energy-val').textContent = `${e.target.value}%`;
     });
 
-    document.getElementById('scene-switch-btn').addEventListener('click', (e) => {
-      state.sceneMode = state.sceneMode === 'oak' ? 'twilight' : 'oak';
-      e.currentTarget.textContent = state.sceneMode === 'oak'
-        ? '🌳 Art: 2D Gnarled Oak'
-        : '🔥 Art: Twilight Bonfire';
-      initParticles();
-    });
-
-    document.getElementById('fit-mode-btn').addEventListener('click', (e) => {
-      state.fitMode = state.fitMode === 'contain' ? 'cover' : 'contain';
-      e.currentTarget.textContent = state.fitMode === 'contain'
-        ? '📐 Fit: Full Drawing'
-        : '📐 Fit: Fill Screen';
+    document.getElementById('garf-size').addEventListener('input', (e) => {
+      state.garfieldScale = Number(e.target.value) / 100;
+      document.getElementById('garf-size-val').textContent = `${e.target.value}%`;
     });
 
     document.getElementById('rain-density').addEventListener('input', (e) => {
@@ -1567,22 +1550,6 @@
     document.getElementById('ember-intensity').addEventListener('input', (e) => {
       state.emberIntensity = Number(e.target.value) / 100;
       document.getElementById('ember-intensity-val').textContent = `${e.target.value}%`;
-      if (fireCrackleGain && audioCtx) {
-        fireCrackleGain.gain.setTargetAtTime(0.35 * state.emberIntensity, audioCtx.currentTime, 0.1);
-      }
-    });
-
-    document.getElementById('fog-opacity').addEventListener('input', (e) => {
-      state.fogMaxOpacity = Number(e.target.value) / 100;
-      document.getElementById('fog-opacity-val').textContent = `${e.target.value}%`;
-    });
-
-    document.getElementById('ambience-vol').addEventListener('input', (e) => {
-      state.ambienceVolume = Number(e.target.value) / 100;
-      document.getElementById('ambience-vol-val').textContent = `${e.target.value}%`;
-      if (masterAmbienceGain && state.ambiencePlaying && audioCtx) {
-        masterAmbienceGain.gain.setTargetAtTime(state.ambienceVolume, audioCtx.currentTime, 0.1);
-      }
     });
 
     document.getElementById('music-vol').addEventListener('input', (e) => {
@@ -1612,7 +1579,6 @@
       if (!file) return;
       initAudioEngine();
       if (state.demoPlaying) toggleDemoMusic(false);
-      if (!state.ambiencePlaying) setAmbiencePlaying(true);
       document.getElementById('start-banner').classList.add('hidden');
 
       const url = URL.createObjectURL(file);
@@ -1620,7 +1586,7 @@
       audioEl.load();
 
       trackNameLabel.textContent = file.name.replace(/\.[^/.]+$/, '');
-      trackStatusLabel.textContent = '4-Stem Dissection Active';
+      trackStatusLabel.textContent = 'Garfield dancing to 4 stems!';
       playPauseBtn.disabled = false;
       seekSlider.disabled = false;
 
